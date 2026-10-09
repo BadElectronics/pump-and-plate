@@ -133,7 +133,25 @@ jobs:
         shell: bash
         run: |
           aapt=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
-          "$aapt" dump badging build/app/outputs/flutter-apk/app-release.apk | grep -E "^package:|targetSdkVersion" | tee -a "$RUNNER_TEMP/logs/build-apk.log"
+          badging=$("$aapt" dump badging build/app/outputs/flutter-apk/app-release.apk)
+          echo "$badging" | grep -E "^package:|targetSdkVersion" | tee -a "$RUNNER_TEMP/logs/build-apk.log"
+          target=$(echo "$badging" | sed -nE "s/^targetSdkVersion:'([0-9]+)'.*/\1/p")
+          echo "::notice title=Android version::Targets API $target (Google Play needs 36 or newer). Flutter $(flutter --version | head -1)"
+          [ "${target:-0}" -ge 36 ] || { echo "::error::Targets API $target; Google Play needs 36."; exit 1; }
+      - name: Check for tracking libraries
+        shell: bash
+        run: |
+          # The app promises no analytics or tracking. This lists every library
+          # in the Android app and flags any that report to Google or others.
+          (cd android && ./gradlew -q :app:dependencies --configuration releaseRuntimeClasspath) > "$RUNNER_TEMP/logs/dependencies.txt" 2>&1 || true
+          pattern='com\.google\.mlkit|play-services-mlkit|com\.google\.firebase|datatransport|play-services-measurement|play-services-analytics|clearcut|crashlytics|sentry|appcenter|mixpanel|amplitude|facebook'
+          hits=$(grep -oiE "[a-z0-9_.-]*($pattern)[a-z0-9_.:-]*" "$RUNNER_TEMP/logs/dependencies.txt" | sort -u | tr '\n' ' ')
+          libs=$(grep -cE -- '--- ' "$RUNNER_TEMP/logs/dependencies.txt" || true)
+          if [ -n "$hits" ]; then
+            echo "::warning title=Tracking libraries::Found in the Android app: $hits"
+          else
+            echo "::notice title=Tracking libraries::None found ($libs library entries checked: no ML Kit, Firebase, analytics or Google data transport)."
+          fi
       - name: Remove the key from this computer
         if: always()
         shell: bash

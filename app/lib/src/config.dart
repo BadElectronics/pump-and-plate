@@ -9,7 +9,7 @@ const String appName = 'Pump and Plate';
 const String openFoodFactsContact = 'support@luchelectronics.com';
 
 /// The build shown in Settings > About.
-const String buildLabel = 'Phase 5, build 16';
+const String buildLabel = 'Phase 5, build 17';
 
 /// The privacy policy, on the website (Settings > Support links to it).
 const String privacyPolicyUrl = 'https://luchelectronics.com/privacy.html';

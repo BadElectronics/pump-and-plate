@@ -1,6 +1,7 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:flutter_zxing/flutter_zxing.dart';
 
 import '../calc/barcode.dart';
 import '../calc/calc.dart';
@@ -125,6 +126,8 @@ class _LookupDialogState extends State<_LookupDialog> {
 
 /// The camera, with a frame to aim at, a flashlight, and a way to type the
 /// number instead. Returns the code's digits.
+///
+/// Barcodes are read on the phone by ZXing; the camera picture never leaves it.
 class BarcodeScanScreen extends StatefulWidget {
   const BarcodeScanScreen({super.key});
 
@@ -135,17 +138,37 @@ class BarcodeScanScreen extends StatefulWidget {
 }
 
 class _BarcodeScanScreenState extends State<BarcodeScanScreen> {
-  final _controller = MobileScannerController(
-    formats: const [BarcodeFormat.ean13, BarcodeFormat.ean8, BarcodeFormat.upcA, BarcodeFormat.upcE],
-    detectionSpeed: DetectionSpeed.noDuplicates,
-  );
+  /// Grocery barcodes only (EAN and UPC).
+  static const int _formats = Format.ean13 | Format.ean8 | Format.upca | Format.upce;
+
+  CameraController? _camera;
+  bool _cameraFailed = false;
   bool _done = false;
   bool _torch = false;
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _onCamera(CameraController? controller, Exception? error) {
+    if (!mounted) return;
+    // A missing flashlight isn't a reason to give up on the camera.
+    if (error is CameraException && error.code == 'setFlashModeFailed') return;
+    setState(() {
+      if (controller != null) _camera = controller;
+      _cameraFailed = controller == null && error != null;
+    });
+  }
+
+  Future<void> _toggleTorch() async {
+    final cam = _camera;
+    if (cam == null || !cam.value.isInitialized) return;
+    final on = !_torch;
+    try {
+      await cam.setFlashMode(on ? FlashMode.torch : FlashMode.off);
+      if (mounted) setState(() => _torch = on);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This phone\'s flashlight can\'t be used here.')),
+      );
+    }
   }
 
   void _finish(String digits) {
@@ -155,14 +178,20 @@ class _BarcodeScanScreenState extends State<BarcodeScanScreen> {
     Navigator.of(context).pop(digits);
   }
 
-  void _onDetect(BarcodeCapture capture) {
-    for (final b in capture.barcodes) {
-      final d = barcodeDigits(b.rawValue ?? '');
-      if (d.length == 8 || d.length == 12 || d.length == 13) {
-        _finish(d);
-        return;
-      }
+  void _onScan(Code code) {
+    if (!code.isValid) return;
+    final d = barcodeDigits(code.text ?? '');
+    if (_looksRight(d)) _finish(d);
+  }
+
+  /// A grocery code with the right length and a correct check digit.
+  static bool _looksRight(String d) {
+    if (d.length == 12 || d.length == 13) return validCheckDigit(d);
+    if (d.length == 8) {
+      final expanded = upcEToUpcA(d);
+      return validCheckDigit(d) || (expanded != null && validCheckDigit(expanded));
     }
+    return false;
   }
 
   Future<void> _typeIt() async {
@@ -216,11 +245,26 @@ class _BarcodeScanScreenState extends State<BarcodeScanScreen> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: MobileScanner(
-              controller: _controller,
-              onDetect: _onDetect,
-              errorBuilder: (context, error) => _CameraProblem(onType: _typeIt),
-            ),
+            child: _cameraFailed
+                ? _CameraProblem(onType: _typeIt)
+                : ReaderWidget(
+                    codeFormat: _formats,
+                    onScan: _onScan,
+                    onControllerCreated: _onCamera,
+                    tryHarder: true,
+                    tryRotate: true,
+                    // Look often, and over most of the picture, so a barcode
+                    // anywhere near the frame is caught.
+                    scanDelay: const Duration(milliseconds: 120),
+                    cropPercent: 0.9,
+                    // This screen draws its own frame and buttons.
+                    showScannerOverlay: false,
+                    showFlashlight: false,
+                    showToggleCamera: false,
+                    showGallery: false,
+                    allowPinchZoom: true,
+                    loading: const ColoredBox(color: Colors.black),
+                  ),
           ),
           // The aiming frame.
           Center(
@@ -250,10 +294,7 @@ class _BarcodeScanScreenState extends State<BarcodeScanScreen> {
                       const Spacer(),
                       IconButton(
                         tooltip: _torch ? 'Flashlight off' : 'Flashlight on',
-                        onPressed: () {
-                          _controller.toggleTorch();
-                          setState(() => _torch = !_torch);
-                        },
+                        onPressed: _toggleTorch,
                         icon: Icon(_torch ? Icons.flash_on_rounded : Icons.flash_off_rounded, color: Colors.white),
                       ),
                     ],
