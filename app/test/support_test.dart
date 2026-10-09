@@ -66,7 +66,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     expect(jar.given, ['tip_5']);
-    expect(find.textContaining('Thank you!'), findsOneWidget);
+    expect(find.textContaining('Tips help so much!'), findsOneWidget);
 
     await tester.pump(const Duration(seconds: 5)); // the thank-you goes away
     await tester.tap(find.byKey(const ValueKey('other-tip')));
