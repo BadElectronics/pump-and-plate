@@ -1,0 +1,296 @@
+flutter_gemma: Downloading litertlm native libs from https://github.com/DenisovAV/flutter_gemma/releases/download/native-v0.17.1-a/litertlm-linux_x86_64.tar.gz ...
+
+flutter_gemma: Checksum verified (litertlm-linux_x86_64.tar.gz)
+
+flutter_gemma: litertlm libs cached to /home/runner/.cache/flutter_gemma/native/linux_x86_64
+
+00:00 +0: loading /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart
+00:00 +0: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: check digits catch misreads
+00:00 +1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: UPC-E expands to UPC-A, and the same product matches in every form
+00:00 +2: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: reads an Open Food Facts product, filling calories from kilojoules
+00:00 +3: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: a scanned UPC finds the food saved under its EAN form
+00:00 +4: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: barcode, brand and serving survive saving, backups and food shares
+00:00 +5: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: recognises a full phone
+00:00 +6: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a failed save is kept, warned about, and written by Try again
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+Saving again failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+00:00 +7: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a deletion made while full is replayed before re-saving
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+00:00 +8: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a full phone shows a warning, and Try again saves
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+00:01 +9: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: a workout written with dashes, rest and techniques is read fully
+00:01 +10: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: exercise names match despite "Flat", "Seated", "Weighted" and "DB"
+00:01 +11: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: notes and set types are kept, and starting the workout presets them
+00:01 +12: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +13: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +14: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +15: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +16: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +17: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +18: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +19: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:02 +20: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: Chat without a model a typed weigh-in is checked, then saved
+00:03 +21: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: Chat without a model a typed breakfast is matched to foods, then saved
+00:03 +22: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Chat warns that the AI is experimental until told not to
+00:04 +23: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Chat warns that the AI is experimental until told not to
+00:04 +24: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Chat warns that the AI is experimental until told not to
+00:05 +25: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Put AI away frees the model and says so
+00:05 +26: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Put AI away frees the model and says so
+00:05 +27: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Put AI away frees the model and says so
+00:05 +28: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Put AI away frees the model and says so
+00:05 +29: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Put AI away frees the model and says so
+00:05 +30: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water added, removed, totalled, saved and backed up
+00:05 +31: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: if the engine is stuck, it offers to restart the app
+00:05 +32: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: if the engine is stuck, it offers to restart the app
+00:05 +33: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water +1 cup on Home
+00:06 +34: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: "Free memory when Chat isn't used" is off by default, and saved
+00:06 +35: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: schedule, move and remove a planned workout
+00:06 +36: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: copy last week skips workouts already planned
+00:06 +37: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: a finished session marks the planned workout done
+00:06 +38: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: editing keeps ticked sets and deletes empty workouts
+00:06 +39: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: deleting a workout clears its future calendar slots
+00:06 +40: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: a running rest is saved, then recorded or dropped at finish
+00:06 +41: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: past weigh-ins can be added, changed and deleted
+00:06 +42: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: superset spans group linked exercises
+00:06 +43: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: cardio: starter exercises, one interval, notes and minutes
+00:06 +44: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: new fields survive storage round-trips
+00:07 +45: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: opens on Home with the pie, the greeting and the check-ins
+00:08 +46: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: a slice opens its section, and Home folds it back
+00:08 +47: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: a slice opens its section, and Home folds it back
+00:08 +48: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: a slice opens its section, and Home folds it back
+00:08 +49: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted workout into a draft and saves it
+00:09 +50: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted recipe into a draft with grams
+00:09 +51: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat explains when on-device AI is unavailable
+00:09 +52: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:10 +53: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:10 +54: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:10 +55: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:10 +56: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:10 +57: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:10 +58: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:10 +59: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:11 +60: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Plan > Workouts adds the starter plan
+00:11 +61: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: dropping a set also drops its set type, and normal sets save as none
+00:11 +62: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Plan opens on the month calendar, with week and today views
+00:11 +63: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: the month view pages to the next month
+00:11 +64: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: a workout from the tray can be tapped onto a day
+00:12 +65: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Food opens on Groceries with the guide and your own lists
+00:12 +66: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Food opens on Groceries with the guide and your own lists
+00:12 +67: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Food opens on Groceries with the guide and your own lists
+00:12 +68: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Food opens on Groceries with the guide and your own lists
+00:12 +69: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: the custom checklist adds an item
+00:12 +70: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: existing installs are asked once for an optional nickname
+00:12 +71: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: the app tour shows once on Home and can be skipped
+00:12 +72: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: the tour walks through every step, then replays from Settings
+00:12 +73: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: the tour walks through every step, then replays from Settings
+00:13 +74: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: macros scale with grams
+00:13 +75: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: starter foods load and logging adds up the day
+00:13 +76: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: recipes: totals, per serving, logging and editing amounts
+00:13 +77: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: copy the day before, and delete
+00:13 +78: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: stores and prices; removing a store removes its prices
+00:13 +79: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: food data survives a backup
+00:13 +80: /home/runner/work/pump-and-plate/pump-and-plate/app/test/tips_test.dart: the store is not started until the tip jar asks for tips
+00:14 +81: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: day words
+00:14 +82: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: typed plan commands
+00:14 +83: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:14 +84: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:14 +85: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:14 +86: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:14 +87: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:14 +88: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:15 +89: /home/runner/work/pump-and-plate/pump-and-plate/app/test/projection_test.dart: the calendar explains projected weights with a legend
+00:15 +90: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals typed "add an egg tomorrow" plans the egg
+00:15 +91: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals "plan a meal for tomorrow" opens an empty card to add foods
+00:16 +92: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI sends foods as objects: still a card with the food
+00:16 +93: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI leaves the foods out: taken from what was typed
+00:16 +94: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +95: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +96: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +97: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +98: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +99: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +100: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +101: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +102: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +103: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +104: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +105: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +106: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +107: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +108: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +109: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +110: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +111: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +112: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:17 +113: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: search and the equipment filter open every group
+00:18 +114: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: search and the equipment filter open every group
+00:18 +115: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: search and the equipment filter open every group
+00:18 +116: /home/runner/work/pump-and-plate/pump-and-plate/app/test/week_start_test.dart: last week follows the setting
+00:18 +117: loading /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart
+00:18 +117: /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart: dark hours, including across midnight
+00:18 +118: /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart: the next switch
+00:18 +119: /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart: the settings are saved
+00:18 +120: /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart: the app goes dark during the set hours
+00:19 +121: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: without a store, the tip jar says tips come later
+00:19 +122: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: without a store, the tip jar says tips come later
+00:19 +123: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: without a store, the tip jar says tips come later
+00:20 +124: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: quick tips, and any other amount from the list
+00:20 +125: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: quick tips, and any other amount from the list
+00:20 +126: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: quick tips, and any other amount from the list
+00:20 +127: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: quick tips, and any other amount from the list
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextContainingWidgetFinder:<Found 0 widgets with text containing Thank you!: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart:69:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart line 69
+The test description was:
+  quick tips, and any other amount from the list
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:20 +127 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: quick tips, and any other amount from the list [E]
+  Test failed. See exception logs above.
+  The test description was: quick tips, and any other amount from the list
+  
+00:21 +127 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export CSV cells quote only when needed
+00:21 +128 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export CRC-32 matches the standard check value
+00:21 +129 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export zip has the right structure
+00:21 +130 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export spreadsheets cover every log
+00:21 +131 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: PIN hashing is salted and checkable
+00:21 +132 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: an active phase sets goal mode and pace
+00:21 +133 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: weekly summary adds up last week
+00:21 +134 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: widget data shows today's weight and workout
+00:21 +135 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: doses: amounts as you take them, history kept when removed
+00:21 +136 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: supplements survive a backup
+00:21 +137 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:22 +138 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:22 +139 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:22 +140 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:22 +141 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:22 +142 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/muscles_test.dart: the Overview card shows trained muscles and opens the heatmap
+00:23 +143 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/muscles_test.dart: the Overview card shows trained muscles and opens the heatmap
+00:23 +144 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:23 +145 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:23 +146 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:23 +147 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:23 +148 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:23 +149 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:23 +150 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:23 +151 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +152 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +153 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +154 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +155 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +156 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +157 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +158 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +159 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +160 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +161 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +162 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +163 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +164 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +165 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +166 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +167 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +168 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +169 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +170 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +171 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +172 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +173 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +174 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +175 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:24 +176 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calc_test.dart: photos due due when never taken, off when interval is 0
+00:24 +177 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a built-in food becomes yours once, with fiber, sugar and sodium
+00:24 +178 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a built-in food becomes yours once, with fiber, sugar and sodium
+00:24 +179 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a built-in food becomes yours once, with fiber, sugar and sodium
+00:24 +180 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a built-in food becomes yours once, with fiber, sugar and sodium
+00:24 +181 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a built-in food becomes yours once, with fiber, sugar and sodium
+00:24 +182 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a built-in food becomes yours once, with fiber, sugar and sodium
+00:24 +183 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a built-in food becomes yours once, with fiber, sugar and sodium
+00:24 +184 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: the new food fields survive saving, backups and sharing
+00:25 +185 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: names sort oldest to newest
+00:25 +186 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: due daily or weekly, by calendar day
+00:25 +187 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: clean-up keeps the newest and never touches other files
+00:25 +188 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: a due backup is written, old ones pruned, the result recorded
+00:25 +189 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: nothing happens when off or not due, unless asked
+00:25 +190 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: a missing folder is reported plainly
+00:25 +191 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: backup settings survive saving
+00:25 +192 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: make_recipe: shows a card and changes nothing on its own
+00:25 +193 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: make_recipe: shows a card and changes nothing on its own
+00:25 +194 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: make_recipe: shows a card and changes nothing on its own
+00:26 +195 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:26 +196 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:27 +197 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:27 +198 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: log_weight: shows a card and changes nothing on its own
+00:27 +199 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete yesterday's lunch, then undo
+00:27 +200 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete yesterday's lunch, then undo
+00:27 +201 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: log_water: shows a card and changes nothing on its own
+00:28 +202 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change an exercise in a workout
+00:28 +203 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: plan_workout: shows a card and changes nothing on its own
+00:28 +204 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:28 +205 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:28 +206 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: start_workout: shows a card and changes nothing on its own
+00:28 +207 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:29 +208 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: add_exercise_to_workout: shows a card and changes nothing on its own
+00:29 +209 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:29 +210 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:29 +211 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_exercise_in_workout: shows a card and changes nothing on its own
+00:29 +212 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: start_mesocycle: shows a card and changes nothing on its own
+00:29 +213 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: move_food: shows a card and changes nothing on its own
+00:29 +214 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: delete_food: shows a card and changes nothing on its own
+00:30 +215 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_food_amount: shows a card and changes nothing on its own
+00:30 +216 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_food_amount: shows a card and changes nothing on its own
+00:30 +217 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_food_amount: shows a card and changes nothing on its own
+00:30 +218 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_food_amount: shows a card and changes nothing on its own
+00:30 +219 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_food_amount: shows a card and changes nothing on its own
+00:30 +220 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_food_amount: shows a card and changes nothing on its own
+00:30 +221 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_food_amount: shows a card and changes nothing on its own
+00:30 +222 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: add_groceries: shows a card and changes nothing on its own
+00:30 +223 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_goal: shows a card and changes nothing on its own
+00:30 +224 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_protein_target: shows a card and changes nothing on its own
+00:30 +225 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_units: shows a card and changes nothing on its own
+00:30 +226 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_theme: shows a card and changes nothing on its own
+00:30 +227 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:31 +228 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:31 +229 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:31 +230 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:31 +231 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:31 +232 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:31 +233 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:31 +234 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:32 +235 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:32 +236 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:32 +237 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:32 +238 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: delete_workout_session: shows a card and changes nothing on its own
+00:32 +239 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: the target shows, and the weight you use sticks to the next set
+00:32 +240 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: rest taken after a set shows small, during the workout
+00:32 +241 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +242 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +243 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +244 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +245 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +246 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +247 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +248 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +249 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +250 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +251 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: locked: taps do nothing until slid open
+00:33 +252 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: notes: kept with each workout; a change carries forward, not back
+00:33 +253 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: quick tips, and any other amount from the list

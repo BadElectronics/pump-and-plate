@@ -1,0 +1,16 @@
+Analyzing app...                                                
+
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/src/screens/goals_screen.dart:393:64 • unnecessary_non_null_assertion
+warning • The '!' will have no effect because the receiver can't be null. Try removing the '!' operator • lib/src/screens/goals_screen.dart:399:57 • unnecessary_non_null_assertion
+   info • 'onReorder' is deprecated and shouldn't be used. Use the onReorderItem callback instead. The onReorderItem callback adjusts the newIndex parameter for a removed item at the oldIndex. This feature was deprecated after v3.41.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/src/screens/plan_screen.dart:198:7 • deprecated_member_use
+warning • Unused import: '../calc/calc.dart'. Try removing the import directive • lib/src/screens/recipes_view.dart:3:8 • unused_import
+warning • Unused import: '../data/store.dart'. Try removing the import directive • lib/src/screens/settings_screen.dart:12:8 • unused_import
+   info • 'onReorder' is deprecated and shouldn't be used. Use the onReorderItem callback instead. The onReorderItem callback adjusts the newIndex parameter for a removed item at the oldIndex. This feature was deprecated after v3.41.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/src/screens/workout_editor_screen.dart:196:17 • deprecated_member_use
+   info • The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive • lib/src/services/auto_backup.dart:2:8 • unnecessary_import
+   info • 'translate' is deprecated and shouldn't be used. Use translateByVector3, translateByVector4, or translateByDouble instead. Try replacing the use of the deprecated member with the replacement • lib/src/shell.dart:282:33 • deprecated_member_use
+   info • 'scale' is deprecated and shouldn't be used. Use scaleByVector3, scaleByVector4, or scaleByDouble instead. Try replacing the use of the deprecated member with the replacement • lib/src/shell.dart:283:33 • deprecated_member_use
+   info • 'translate' is deprecated and shouldn't be used. Use translateByVector3, translateByVector4, or translateByDouble instead. Try replacing the use of the deprecated member with the replacement • lib/src/widgets/pie_menu.dart:292:13 • deprecated_member_use
+   info • 'scale' is deprecated and shouldn't be used. Use scaleByVector3, scaleByVector4, or scaleByDouble instead. Try replacing the use of the deprecated member with the replacement • lib/src/widgets/pie_menu.dart:293:13 • deprecated_member_use
+   info • The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive • test/calc_test.dart:1:8 • unnecessary_import
+
+12 issues found. (ran in 9.6s)
