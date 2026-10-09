@@ -147,16 +147,24 @@ jobs:
           pattern='com\.google\.mlkit|play-services-mlkit|com\.google\.firebase|datatransport|play-services-measurement|play-services-analytics|clearcut|crashlytics|sentry|appcenter|mixpanel|amplitude|facebook'
           hits=$(grep -oiE "[a-z0-9_.-]*($pattern)[a-z0-9_.:-]*" "$RUNNER_TEMP/logs/dependencies.txt" | sort -u | tr '\n' ' ')
           libs=$(grep -cE -- '--- ' "$RUNNER_TEMP/logs/dependencies.txt" || true)
-          if [ -n "$hits" ]; then
-            echo "::warning title=Tracking libraries::Found in the Android app: $hits"
-            # Say which of the app's packages brings each one in.
-            for dep in $(echo "$hits" | tr ' ' '\n' | sed -nE 's/^([^:]+:[^:]+).*/\1/p' | sort -u); do
-              chain=$(cd android && ./gradlew -q :app:dependencyInsight --dependency "$dep" --configuration releaseRuntimeClasspath 2>/dev/null \
-                | grep -oE "(project :[A-Za-z0-9_]+|[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[0-9][A-Za-z0-9_.-]*)" | sort -u | tr '\n' ' ' | cut -c1-900)
-              echo "::warning title=Brought in by ($dep)::$chain"
-            done
+          # Google Play Billing (the tip jar) brings in Google's reporting
+          # library. That's expected: the app only starts Google Play Billing
+          # when the tip jar is opened. Anything else is flagged.
+          billing="" other=""
+          for dep in $(echo "$hits" | tr ' ' '\n' | sed -nE 's/^([^:]+:[^:]+).*/\1/p' | sort -u); do
+            chain=$(cd android && ./gradlew -q :app:dependencyInsight --dependency "$dep" --configuration releaseRuntimeClasspath 2>/dev/null \
+              | grep -oE "(project :[A-Za-z0-9_]+|[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[0-9][A-Za-z0-9_.-]*)" | sort -u | tr '\n' ' ')
+            if echo "$chain" | grep -q "com.android.billingclient:billing"; then
+              billing="$billing $dep"
+            else
+              other="$other $dep"
+              echo "::warning title=Brought in by ($dep)::$(echo "$chain" | cut -c1-900)"
+            fi
+          done
+          if [ -n "$other" ]; then
+            echo "::warning title=Tracking libraries::Found in the Android app:$other"
           else
-            echo "::notice title=Tracking libraries::None found ($libs library entries checked: no ML Kit, Firebase, analytics or Google data transport)."
+            echo "::notice title=Tracking libraries::No ML Kit, Firebase or analytics libraries ($libs library entries checked).${billing:+ Google Play Billing's own reporting library is present (only started when the tip jar is opened):$billing}"
           fi
       - name: Remove the key from this computer
         if: always()

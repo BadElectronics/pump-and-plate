@@ -32,18 +32,29 @@ abstract class TipJar {
 }
 
 /// Through Google Play Billing / StoreKit.
+///
+/// Nothing here touches the store until the tip jar is opened: the first
+/// [tips] call starts Google Play Billing (or StoreKit). Google's billing
+/// library sends Google its own diagnostics once it starts, so people who
+/// never open the tip jar never start it. A tip left unfinished (the app
+/// closed mid-payment) is completed the next time the tip jar opens.
 class StoreTipJar implements TipJar {
-  StoreTipJar() {
-    // Listen from the start, so a tip finished while the app was closed is
-    // still completed (and not refunded by the store).
-    _sub = InAppPurchase.instance.purchaseStream.listen(_onUpdate, onError: (Object _) {});
-  }
+  StoreTipJar();
 
   final _out = StreamController<TipOutcome>.broadcast();
   final _details = <String, ProductDetails>{};
-  // Kept for the life of the app.
-  // ignore: unused_field
+  // Kept for the life of the app once the tip jar has been opened.
   StreamSubscription<List<PurchaseDetails>>? _sub;
+
+  /// Whether the store has been started (for tests).
+  bool get started => _sub != null;
+
+  /// Starts the store the first time it's needed.
+  InAppPurchase _store() {
+    final store = InAppPurchase.instance;
+    _sub ??= store.purchaseStream.listen(_onUpdate, onError: (Object _) {});
+    return store;
+  }
 
   @override
   Stream<TipOutcome> get outcomes => _out.stream;
@@ -51,8 +62,9 @@ class StoreTipJar implements TipJar {
   @override
   Future<List<Tip>> tips() async {
     try {
-      if (!await InAppPurchase.instance.isAvailable()) return const [];
-      final r = await InAppPurchase.instance.queryProductDetails(tipProductIds.toSet());
+      final store = _store();
+      if (!await store.isAvailable()) return const [];
+      final r = await store.queryProductDetails(tipProductIds.toSet());
       final list = <Tip>[];
       for (final p in r.productDetails) {
         _details[p.id] = p;
@@ -71,7 +83,7 @@ class StoreTipJar implements TipJar {
     if (p == null) return false;
     try {
       // A tip can be given again, so it's used up right away.
-      return await InAppPurchase.instance.buyConsumable(purchaseParam: PurchaseParam(productDetails: p));
+      return await _store().buyConsumable(purchaseParam: PurchaseParam(productDetails: p));
     } catch (_) {
       return false;
     }
@@ -91,7 +103,7 @@ class StoreTipJar implements TipJar {
       }
       if (p.pendingCompletePurchase) {
         try {
-          await InAppPurchase.instance.completePurchase(p);
+          await _store().completePurchase(p);
         } catch (_) {}
       }
     }

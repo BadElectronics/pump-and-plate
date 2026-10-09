@@ -28,9 +28,9 @@
     <table>
       <thead><tr><th>When</th><th>What is sent</th><th>To whom</th></tr></thead>
       <tbody>
-        <tr><td>You scan a barcode, or search online for a branded food</td><td>The barcode number, or your search words. Nothing about you.</td><td><a href="https://world.openfoodfacts.org/privacy">Open Food Facts</a></td></tr>
+        <tr><td>You look up a barcode online, or search online for a branded food (both off until you allow them)</td><td>The barcode number, or your search words. Nothing about you.</td><td><a href="https://world.openfoodfacts.org/privacy">Open Food Facts</a></td></tr>
         <tr><td>You tap Download for an AI model</td><td>A request for the model file</td><td><a href="https://huggingface.co/privacy">Hugging Face</a></td></tr>
-        <tr><td>You leave a tip</td><td>The purchase, handled entirely by the store</td><td><a href="https://policies.google.com/privacy">Google Play</a> or <a href="https://www.apple.com/legal/privacy/">the App Store</a></td></tr>
+        <tr><td>You open the tip jar, or leave a tip</td><td>A request for the tip prices, then the purchase, handled entirely by the store. On Android, Google Play's payment system also sends Google its own diagnostics once it starts, and it only starts when you open the tip jar.</td><td><a href="https://policies.google.com/privacy">Google Play</a> or <a href="https://www.apple.com/legal/privacy/">the App Store</a></td></tr>
         <tr><td>You choose to email a bug report</td><td>Your message, with the app's version and your phone model filled in. You see it all before you send.</td><td>Us</td></tr>
       </tbody>
     </table>
@@ -42,7 +42,7 @@
 
   <h2>Permissions the app asks for</h2>
   <ul>
-    <li><strong>Camera:</strong> to scan barcodes and take progress photos.</li>
+    <li><strong>Camera:</strong> to scan barcodes and take progress photos. Barcodes are read on your phone, and the camera picture never leaves it.</li>
     <li><strong>Notifications:</strong> for the morning reminder and rest alerts, which your phone schedules itself.</li>
     <li><strong>Alarms and reminders</strong> (Android): so a rest alert arrives on time.</li>
     <li><strong>Face ID or fingerprint:</strong> to lock the app, if you turn that on. Your phone checks it, and the app never sees your face or fingerprint.</li>
