@@ -149,6 +149,12 @@ jobs:
           libs=$(grep -cE -- '--- ' "$RUNNER_TEMP/logs/dependencies.txt" || true)
           if [ -n "$hits" ]; then
             echo "::warning title=Tracking libraries::Found in the Android app: $hits"
+            # Say which of the app's packages brings each one in.
+            for dep in $(echo "$hits" | tr ' ' '\n' | sed -nE 's/^([^:]+:[^:]+).*/\1/p' | sort -u); do
+              chain=$(cd android && ./gradlew -q :app:dependencyInsight --dependency "$dep" --configuration releaseRuntimeClasspath 2>/dev/null \
+                | grep -oE "(project :[A-Za-z0-9_]+|[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+:[0-9][A-Za-z0-9_.-]*)" | sort -u | tr '\n' ' ' | cut -c1-900)
+              echo "::warning title=Brought in by ($dep)::$chain"
+            done
           else
             echo "::notice title=Tracking libraries::None found ($libs library entries checked: no ML Kit, Firebase, analytics or Google data transport)."
           fi
