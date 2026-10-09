@@ -47,8 +47,16 @@ Every push to `main` runs [`.github/workflows/build.yml`](.github/workflows/buil
 
 Open an [issue](../../issues) with your phone model, what you did and what happened. Please don't include personal data.
 
-## Licence
+## Licence and third-party content
 
 The code is free software under the [GNU General Public License v3.0](LICENSE). You can read it, build it, change it and share it, as long as anything you share is under the same licence with its source code.
 
 The name **Pump and Plate** and the app icon are not covered by the licence. If you publish your own version, give it a different name and icon.
+
+Some files in this repository belong to others and keep their own terms; the GPL doesn't cover them:
+
+| Files | Owner and terms |
+| --- | --- |
+| `app/assets/bodyfat/` | Body-fat reference photos from JN Muscle Lab (Jeff Nippard), shared by him for public use as reference images. Credited in the app. If you reuse the code, check his terms before reusing these photos. |
+| `app/assets/fonts/` | Geist and Geist Mono (The Geist Project Authors), under the SIL Open Font License 1.1 (`app/assets/fonts/OFL.txt`). |
+| `app/assets/foods/` | Food data from the USDA National Nutrient Database (SR28), a US government work in the public domain. |

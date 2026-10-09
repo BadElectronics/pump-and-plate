@@ -135,7 +135,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/logs"
           set -o pipefail
-          flutter build ios --release --no-codesign 2>&1 | tee "$RUNNER_TEMP/logs/build-ios.log"
+          flutter build ios --release --no-codesign -v 2>&1 | tee "$RUNNER_TEMP/logs/build-ios.log"
       - name: Save the log of a failed build
         if: failure()
         shell: bash
