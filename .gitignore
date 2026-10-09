@@ -1,0 +1,28 @@
+# Made on each computer by build.bat or the cloud build
+app/android/
+app/ios/
+app/build/
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/pubspec.lock
+app/packages/*/.dart_tool/
+app/packages/*/build/
+app/**/*.iml
+app/.idea/
+app/.metadata
+
+# Tools, builds and keys that live only on your PC. NEVER upload keys.
+tools/
+output/
+keys/
+*.keystore
+*.jks
+key.properties
+*.p8
+*.p12
+*.mobileprovision
+
+# Windows and Mac clutter
+Thumbs.db
+.DS_Store
