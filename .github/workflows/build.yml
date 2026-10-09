@@ -164,7 +164,7 @@ jobs:
           if [ -n "$other" ]; then
             echo "::warning title=Tracking libraries::Found in the Android app:$other"
           else
-            echo "::notice title=Tracking libraries::No ML Kit, Firebase or analytics libraries ($libs library entries checked).${billing:+ Google Play Billing's own reporting library is present (only started when the tip jar is opened):$billing}"
+            echo "::notice title=Tracking libraries::No ML Kit, Firebase or analytics libraries ($libs library entries checked).${billing:+ Google Play Billing brings its own reporting library (only started when the tip jar is opened):$billing}"
           fi
       - name: Remove the key from this computer
         if: always()
