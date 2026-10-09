@@ -305,14 +305,15 @@ class SettingsScreen extends StatelessWidget {
                     child: const Text('Email'),
                   ),
                 ),
-                SettingRow(
-                  label: 'Watch on YouTube',
-                  trailing: TextButton(
-                    onPressed: () => openYouTube(context),
-                    style: TextButton.styleFrom(foregroundColor: c.accent),
-                    child: const Text('Open'),
+                if (youtubeUrl.isNotEmpty)
+                  SettingRow(
+                    label: 'Watch on YouTube',
+                    trailing: TextButton(
+                      onPressed: () => openYouTube(context),
+                      style: TextButton.styleFrom(foregroundColor: c.accent),
+                      child: const Text('Open'),
+                    ),
                   ),
-                ),
               ],
             ),
           ),

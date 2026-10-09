@@ -216,17 +216,19 @@ class _SupportScreenState extends State<SupportScreen> {
               padding: const EdgeInsets.fromLTRB(18, 6, 8, 6),
               child: Column(
                 children: [
-                  SettingRow(
-                    divider: false,
-                    label: 'Watch on YouTube',
-                    note: 'Training videos and what\'s new in the app',
-                    trailing: TextButton(
-                      onPressed: () => openYouTube(context),
-                      style: TextButton.styleFrom(foregroundColor: c.accent),
-                      child: const Text('Open'),
+                  if (youtubeUrl.isNotEmpty)
+                    SettingRow(
+                      divider: false,
+                      label: 'Watch on YouTube',
+                      note: 'Training videos and what\'s new in the app',
+                      trailing: TextButton(
+                        onPressed: () => openYouTube(context),
+                        style: TextButton.styleFrom(foregroundColor: c.accent),
+                        child: const Text('Open'),
+                      ),
                     ),
-                  ),
                   SettingRow(
+                    divider: youtubeUrl.isNotEmpty,
                     label: 'Report a bug or suggest a feature',
                     note: 'Opens an email; nothing is sent until you tap Send',
                     trailing: TextButton(

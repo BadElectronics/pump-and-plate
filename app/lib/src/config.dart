@@ -4,20 +4,19 @@ library;
 const String appName = 'Pump and Plate';
 
 /// Sent with Open Food Facts lookups, as their rules ask ("AppName/Version
-/// (contact)"). Put your email here if you'd like them to be able to reach
-/// you about your app's traffic; only the barcode number is ever sent.
-const String openFoodFactsContact = 'personal app';
+/// (contact)"), so they can reach us about the app's traffic. Only the
+/// barcode number or search words are ever sent, never anything about you.
+const String openFoodFactsContact = 'support@luchelectronics.com';
 
 /// The build shown in Settings > About.
 const String buildLabel = 'Phase 5, build 15';
 
-/// Where "Report a bug" emails go. A placeholder until a real address is
-/// chosen: change it here.
-const String supportEmail = 'bugs@example.com';
+/// Where "Report a bug" emails go (Luch Electronics LLC, on Proton).
+const String supportEmail = 'support@luchelectronics.com';
 
-/// "Watch on YouTube" opens this. A placeholder until the channel link is
-/// filled in here.
-const String youtubeUrl = 'https://www.youtube.com/';
+/// "Watch on YouTube" opens this. Empty hides the button everywhere; put the
+/// channel link here to show it.
+const String youtubeUrl = '';
 
 /// Tips: one-time ("consumable") products with these ids must be set up in
 /// the Play Console (and App Store Connect), each with its price. Ids not set
