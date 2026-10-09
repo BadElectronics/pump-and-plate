@@ -70,6 +70,8 @@ final class DeviceChannel: NSObject, AVAudioPlayerDelegate {
   private func network() -> String {
     let path = monitor.currentPath
     if path.status != .satisfied { return "none" }
+    // Wi-Fi or a cable counts as Wi-Fi (also behind a VPN), like on Android.
+    if path.usesInterfaceType(.wifi) || path.usesInterfaceType(.wiredEthernet) { return "unmetered" }
     if path.isExpensive || path.usesInterfaceType(.cellular) { return "metered" }
     return "unmetered"
   }

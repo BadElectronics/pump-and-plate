@@ -8,6 +8,8 @@ name: Build
 on:
   push:
     branches: [main]
+    # A version tag (v1.5.20 and so on) also sends the build to Google Play.
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -236,3 +238,38 @@ jobs:
           git add -A
           git commit -qm "Logs from run ${{ github.run_id }}, ${{ github.job }}"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/ci-logs-${{ github.job }}
+
+  # Sends the signed Google Play file to the Production track, only when a
+  # version tag is pushed (never on ordinary pushes). Needs the
+  # PLAY_SERVICE_ACCOUNT_JSON secret: a Google Cloud service account invited
+  # in Play Console with permission to release. Google still reviews each
+  # update before it reaches people.
+  publish:
+    name: Publish to Google Play
+    needs: [test, android]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pump-and-plate-*-google-play
+          path: dist
+          merge-multiple: true
+      - name: Check the Google Play key is set
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$PLAY_JSON" ]; then
+            echo "::error::Add the PLAY_SERVICE_ACCOUNT_JSON secret to publish automatically."
+            exit 1
+          fi
+          ls -la dist
+      - uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.pumpandplate.app
+          releaseFiles: dist/app-release.aab
+          track: production
+          status: completed
+          whatsNewDirectory: store/whatsnew

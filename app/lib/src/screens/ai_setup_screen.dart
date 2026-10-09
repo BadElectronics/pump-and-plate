@@ -22,7 +22,12 @@ class _AiJob {
   final String label;
   final AiCancel? cancel;
   final progress = ValueNotifier<int>(0);
+
+  /// Set while the download waits for Wi-Fi (shown instead of a percentage).
+  final waiting = ValueNotifier<String?>(null);
 }
+
+enum _DataChoice { useData, waitForWifi }
 
 final _job = ValueNotifier<_AiJob?>(null);
 
@@ -96,6 +101,33 @@ class _AiSetupViewState extends State<AiSetupView> {
 
   void _snack(String text) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
 
+  /// On mobile data: download now, wait for Wi-Fi, or (dismissed) neither.
+  Future<_DataChoice?> _mobileDataChoice(String size) {
+    final c = AppColors.of(context);
+    return showDialog<_DataChoice>(
+      context: context,
+      builder: (d) => AlertDialog(
+        backgroundColor: c.surface,
+        title: const Text('You\'re on mobile data'),
+        content: Text('This download is $size. Use mobile data now, or wait and start it '
+            'by itself when you\'re on Wi-Fi?'),
+        actions: [
+          TextButton(
+            key: const ValueKey('ai-wait-wifi'),
+            onPressed: () => Navigator.of(d).pop(_DataChoice.waitForWifi),
+            style: TextButton.styleFrom(foregroundColor: c.muted),
+            child: const Text('Wait for Wi-Fi'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(d).pop(_DataChoice.useData),
+            style: TextButton.styleFrom(foregroundColor: c.accent),
+            child: const Text('Use mobile data'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<bool> _confirm(String title, String body, String yes, {String no = 'Cancel'}) async {
     final c = AppColors.of(context);
     final ok = await showDialog<bool>(
@@ -159,23 +191,29 @@ class _AiSetupViewState extends State<AiSetupView> {
     }
     final net = await services.device.network();
     if (!mounted) return;
-    if (net == NetworkKind.none) {
-      _snack('No internet connection. Connect to Wi-Fi and try again.');
-      return;
-    }
-    if (net == NetworkKind.metered &&
-        !await _confirm(
-          'You\'re on mobile data',
-          'This download is ${m.sizeLabel}. Use mobile data now, or wait until you\'re on Wi-Fi?',
-          'Use mobile data',
-          no: 'Wait for Wi-Fi',
-        )) {
-      return;
+    var waitForWifi = false;
+    if (net == NetworkKind.metered) {
+      final choice = await _mobileDataChoice(m.sizeLabel);
+      if (choice == null || !mounted) return;
+      waitForWifi = choice == _DataChoice.waitForWifi;
+    } else if (net == NetworkKind.none) {
+      // No connection at all: wait for Wi-Fi rather than giving up.
+      waitForWifi = true;
     }
     final cancel = AiCancel();
     final job = _AiJob(t, 'Downloading ${t.label}', cancel);
     _job.value = job;
     try {
+      if (waitForWifi) {
+        // Checks every few seconds and starts by itself once on Wi-Fi.
+        // Keeps waiting if this screen is closed; Cancel stops it.
+        job.waiting.value = 'Waiting for Wi-Fi. The download starts by itself when you connect.';
+        while (!cancel.cancelled && await services.device.network() != NetworkKind.unmetered) {
+          await Future<void>.delayed(const Duration(seconds: 3));
+        }
+        job.waiting.value = null;
+        if (cancel.cancelled) throw const AiDownloadCancelled();
+      }
       await services.ai.download(m, onProgress: (p) => job.progress.value = p.clamp(0, 100), cancel: cancel);
       _job.value = null;
       await _activate(t, appState, services.ai);
@@ -324,7 +362,10 @@ class _AiSetupViewState extends State<AiSetupView> {
               builder: (context, pct, _) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('${job.label}… $pct%', style: AppText.body(c).copyWith(fontSize: 13)),
+                  ValueListenableBuilder<String?>(
+                    valueListenable: job.waiting,
+                    builder: (context, waiting, _) => Text(waiting ?? '${job.label}… $pct%', style: AppText.body(c).copyWith(fontSize: 13)),
+                  ),
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),

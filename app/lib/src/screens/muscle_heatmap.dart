@@ -243,6 +243,7 @@ Future<void> showMuscleSheet(BuildContext context, AppState s, Muscle m, {requir
   final data = muscleSetsFor(s, fourWeeks: fourWeeks);
   final n = data.sets[m]!;
   final parts = setsForMuscle(m, s.finishedSessions, from: data.from, to: data.to, exercise: s.exercise);
+  final tryThese = exercisesForMuscle(m, s.exercises).take(8).toList();
   final hint = n == 0
       ? 'Not trained in this range.'
       : n < 10
@@ -253,8 +254,9 @@ Future<void> showMuscleSheet(BuildContext context, AppState s, Muscle m, {requir
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: c.surface,
+    isScrollControlled: true,
     builder: (sheet) => SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -291,6 +293,24 @@ Future<void> showMuscleSheet(BuildContext context, AppState s, Muscle m, {requir
                 ),
             const SizedBox(height: 8),
             Text('Secondary muscles count as half a set.', style: AppText.quiet(c).copyWith(fontSize: 12)),
+            if (tryThese.isNotEmpty) ...[
+              const SizedBox(height: 14),
+              Text('EXERCISES TO TRY', style: AppText.label(c).copyWith(fontSize: 11, letterSpacing: 0.8, color: c.accent)),
+              const SizedBox(height: 6),
+              Wrap(
+                key: const ValueKey('muscle-try'),
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final e in tryThese)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      decoration: BoxDecoration(color: c.chip, borderRadius: BorderRadius.circular(16)),
+                      child: Text(e.name, style: AppText.body(c).copyWith(fontSize: 13)),
+                    ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

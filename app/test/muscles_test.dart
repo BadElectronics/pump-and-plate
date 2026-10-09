@@ -191,4 +191,16 @@ void main() {
     final muscles = {...musclesOnSide(back: false), ...musclesOnSide(back: true)};
     expect(muscles, containsAll(Muscle.values));
   });
+
+  test('exercises to try for a muscle work it as a primary muscle, focused ones first', () {
+    final chest = exercisesForMuscle(Muscle.chest, starterExercises);
+    expect(chest.map((e) => e.id), contains('bench_press'));
+    for (final e in chest) {
+      expect(musclesOf(e).primary, contains(Muscle.chest));
+      expect(e.cardio, isFalse);
+    }
+    for (var i = 1; i < chest.length; i++) {
+      expect(musclesOf(chest[i - 1]).primary.length, lessThanOrEqualTo(musclesOf(chest[i]).primary.length));
+    }
+  });
 }

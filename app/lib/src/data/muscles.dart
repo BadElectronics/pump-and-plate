@@ -346,6 +346,19 @@ List<(String, double, int)> setsForHead(
   return list;
 }
 
+/// Exercises in [library] that work [m] as a primary muscle, best first:
+/// ones aimed mostly at [m] (fewest other primary muscles), then by name.
+List<Exercise> exercisesForMuscle(Muscle m, Iterable<Exercise> library) {
+  final list = [
+    for (final e in library)
+      if (!e.archived && !e.cardio && musclesOf(e).primary.contains(m)) e,
+  ]..sort((a, b) {
+      final byFocus = musclesOf(a).primary.length.compareTo(musclesOf(b).primary.length);
+      return byFocus != 0 ? byFocus : a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+  return list;
+}
+
 /// Exercises in [library] that work [head] as a main part, by name.
 List<Exercise> exercisesForHead(MuscleHead head, Iterable<Exercise> library) {
   final list = [

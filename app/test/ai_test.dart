@@ -157,4 +157,12 @@ Directions
       expect(foodMainName('Chicken breast, raw'), 'Chicken breast');
     });
   });
+
+  test('an AI workout without reps keeps just the sets, under its own name', () {
+    final d = parseWorkout('New workout\nPush-ups 3 sets');
+    expect(d.name, 'New workout');
+    expect(d.items, hasLength(1));
+    expect(d.items.first.sets, 3);
+    expect(d.items.first.repsLow, isNull);
+  });
 }

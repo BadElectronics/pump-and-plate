@@ -473,8 +473,25 @@ class MainActivity : FlutterFragmentActivity() {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return "none"
         if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) return "none"
-        return if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)) "unmetered" else "metered"
+        if (onWifi(caps)) return "unmetered"
+        // Behind a VPN Android reports the VPN, which counts as metered by
+        // default, so look at the real connection underneath it.
+        if (caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+            @Suppress("DEPRECATION")
+            for (n in cm.allNetworks) {
+                val c = cm.getNetworkCapabilities(n) ?: continue
+                if (c.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) continue
+                if (c.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && onWifi(c)) return "unmetered"
+            }
+        }
+        return "metered"
     }
+
+    // Wi-Fi or a cable counts as Wi-Fi, even one Android marks as metered.
+    private fun onWifi(c: NetworkCapabilities) =
+        c.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) ||
+            c.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+            c.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
 }
 '@
 

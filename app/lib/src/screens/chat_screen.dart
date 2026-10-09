@@ -233,11 +233,13 @@ const _tools = [
     parameters: {
       'type': 'object',
       'properties': {
-        'name': {'type': 'string', 'description': 'The workout name.'},
+        'name': {'type': 'string', 'description': "A short workout name, e.g. 'Push day'. Make one up if the user didn't give one."},
         'exercises': {
           'type': 'array',
           'items': {'type': 'string'},
-          'description': "One exercise per item, as 'Exercise sets x reps @ load', e.g. 'Squat 5x5 @ 225 lb'.",
+          'description': "One exercise per item, as 'Exercise sets x reps @ load', e.g. 'Squat 5x5 @ 225 lb'. "
+              "Use only the sets, reps and load the user gave: never invent them. Without reps, write "
+              "'Push-ups 3 sets'; without a load, leave out the @ part.",
         },
       },
       'required': ['exercises'],
@@ -1523,8 +1525,10 @@ class _ChatScreenState extends State<ChatScreen> {
       final d = parseRecipe(lines.join('\n'));
       _add(d.ingredients.isEmpty ? _NoteItem('The AI couldn\'t find ingredients with amounts in that.') : _RecipeItem(d));
     } else if (call.name == 'make_workout') {
+      final given = '${call.args['name'] ?? ''}'.trim();
       final lines = [
-        if (call.args['name'] != null) '${call.args['name']}',
+        // The first line is read as the name; the AI's drafts aren't "pasted".
+        given.isEmpty ? 'New workout' : given,
         ..._strings(call.args['exercises']),
       ];
       final d = parseWorkout(lines.join('\n'));
