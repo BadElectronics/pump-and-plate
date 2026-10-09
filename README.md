@@ -11,7 +11,7 @@ A private workout, nutrition and grocery tracker for Android and iPhone. Everyth
 
 Only three things ever touch the internet, and none of them carry your data:
 
-1. **Barcode lookups** go to [Open Food Facts](https://world.openfoodfacts.org) (just the barcode number).
+1. **Food lookups** go to [Open Food Facts](https://world.openfoodfacts.org): a barcode number, or the words you type when you search online for a branded food.
 2. **AI model downloads** come from [Hugging Face](https://huggingface.co/litert-community), once, when you choose to download one.
 3. **Tips** go through Google Play or the App Store's own purchase screen.
 
