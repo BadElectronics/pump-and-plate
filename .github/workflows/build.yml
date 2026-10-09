@@ -1,6 +1,8 @@
 # Builds and tests Pump and Plate on every push, on GitHub's own computers.
-# Nothing here is signed or uploaded yet: this checks that the code compiles
-# and the tests pass, for Android and for iPhone.
+# Android: makes the Google Play file (.aab) and an APK for sideloading, signed
+# with the upload key when the ANDROID_KEYSTORE_* secrets are set (made by
+# make-upload-key.bat). Nothing is uploaded to the stores from here.
+# iPhone: builds unsigned, to check it compiles.
 name: Build
 
 on:
@@ -80,17 +82,72 @@ jobs:
           New-Item -ItemType Directory -Force -Path "$env:RUNNER_TEMP/logs" | Out-Null
           ../scripts/patch-android.ps1 -AppDir $PWD *>&1 | Tee-Object -FilePath "$env:RUNNER_TEMP/logs/patch-android.log"
       - run: flutter pub get
-      - name: Build the Android app
+      - name: Add the upload key
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "::warning::No upload key in the repo's secrets, so this build is signed with a throwaway debug key. Google Play won't accept it."
+            exit 0
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | tr -d ' \r\n' | base64 -d > android/app/upload-keystore.jks
+          {
+            echo "storeFile=upload-keystore.jks"
+            echo "keyAlias=upload"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyPassword=$KEYSTORE_PASSWORD"
+          } > android/key.properties
+          echo "Signing with the upload key."
+      - name: Work out the version
+        id: version
+        shell: bash
+        run: |
+          # "Phase 5, build 16" in config.dart becomes version 1.5.16. The
+          # build number only ever goes up, which Google Play requires.
+          label=$(sed -nE "s/.*buildLabel = 'Phase ([0-9]+), build ([0-9]+)'.*/\1.\2/p" lib/src/config.dart)
+          [ -n "$label" ] || { echo "Couldn't read buildLabel from config.dart"; exit 1; }
+          echo "name=1.$label" >> "$GITHUB_OUTPUT"
+          echo "number=$((1000 + ${{ github.run_number }}))" >> "$GITHUB_OUTPUT"
+          echo "Version 1.$label, build $((1000 + ${{ github.run_number }}))"
+      - name: Build the Google Play file (.aab)
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/logs"
           set -o pipefail
-          flutter build apk --debug 2>&1 | tee "$RUNNER_TEMP/logs/build-android.log"
+          flutter build appbundle --release \
+            --build-name ${{ steps.version.outputs.name }} \
+            --build-number ${{ steps.version.outputs.number }} \
+            2>&1 | tee "$RUNNER_TEMP/logs/build-aab.log"
+      - name: Build the APK for sideloading
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          set -o pipefail
+          flutter build apk --release --target-platform android-arm64 \
+            --build-name ${{ steps.version.outputs.name }} \
+            --build-number ${{ steps.version.outputs.number }} \
+            2>&1 | tee "$RUNNER_TEMP/logs/build-apk.log"
+      - name: Check the target Android version
+        shell: bash
+        run: |
+          aapt=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          "$aapt" dump badging build/app/outputs/flutter-apk/app-release.apk | grep -E "^package:|targetSdkVersion" | tee -a "$RUNNER_TEMP/logs/build-apk.log"
+      - name: Remove the key from this computer
+        if: always()
+        shell: bash
+        run: rm -f android/app/upload-keystore.jks android/key.properties
       - uses: actions/upload-artifact@v4
         with:
-          name: android-debug-apk
-          path: app/build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 7
+          name: pump-and-plate-${{ steps.version.outputs.name }}-google-play
+          path: app/build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pump-and-plate-${{ steps.version.outputs.name }}-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
       - name: Save the log of a failed build
         if: failure()
         shell: bash

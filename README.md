@@ -29,7 +29,7 @@ Your signing key is saved to `keys\`. Keep that folder safe and never upload it.
 
 ### Cloud builds (Android and iPhone)
 
-Every push to `main` runs [`.github/workflows/build.yml`](.github/workflows/build.yml) on GitHub's computers. It runs the tests, builds an Android debug APK, and builds the iPhone app unsigned on a Mac. The iOS project is generated fresh each time by `flutter create`, then [`scripts/patch-ios.sh`](scripts/patch-ios.sh) applies the app's settings. The iPhone-only native code is in [`app/packages/pump_native`](app/packages/pump_native).
+Every push to `main` runs [`.github/workflows/build.yml`](.github/workflows/build.yml) on GitHub's computers. It runs the tests, builds the Android app for Google Play (`.aab`) plus an APK, and builds the iPhone app unsigned on a Mac. Android builds are signed with the Google Play upload key when the `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEYSTORE_PASSWORD` secrets are set; `make-upload-key.bat` makes that key on your PC and copies both values for you. The iOS project is generated fresh each time by `flutter create`, then [`scripts/patch-ios.sh`](scripts/patch-ios.sh) applies the app's settings. The iPhone-only native code is in [`app/packages/pump_native`](app/packages/pump_native).
 
 ## Layout
 

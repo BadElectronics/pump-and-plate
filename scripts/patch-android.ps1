@@ -26,6 +26,24 @@ if (Test-Path $kts) {
   $g = $g -replace 'minSdk\s*=\s*flutter\.minSdkVersion', 'minSdk = maxOf(24, flutter.minSdkVersion)'
   # The app's permanent ID on the phone and in the app stores.
   $g = $g -replace 'applicationId\s*=\s*"[^"]*"', 'applicationId = "com.pumpandplate.app"'
+  # Google Play requires apps to target Android 16 (API 36) or newer.
+  $g = $g -replace 'compileSdk\s*=\s*flutter\.compileSdkVersion', 'compileSdk = maxOf(36, flutter.compileSdkVersion)'
+  $g = $g -replace 'targetSdk\s*=\s*flutter\.targetSdkVersion', 'targetSdk = maxOf(36, flutter.targetSdkVersion)'
+  # Store builds are signed with the upload key when android/key.properties
+  # exists (the cloud build writes it from GitHub's encrypted secrets). Without
+  # it, release builds keep using the debug key, as build.bat always has.
+  if ($g -notmatch 'keystoreProperties') {
+    $signing = @'
+val keystoreProperties = java.util.Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
+}
+
+'@
+    $g = ([regex]'(?m)^android\s*\{').Replace($g, $signing + "android {`n    signingConfigs {`n        create(""upload"") {`n            if (keystorePropertiesFile.exists()) {`n                keyAlias = keystoreProperties[""keyAlias""] as String`n                keyPassword = keystoreProperties[""keyPassword""] as String`n                storeFile = file(keystoreProperties[""storeFile""] as String)`n                storePassword = keystoreProperties[""storePassword""] as String`n            }`n        }`n    }", 1)
+    $g = $g -replace 'signingConfig\s*=\s*signingConfigs\.getByName\("debug"\)', 'signingConfig = if (keystorePropertiesFile.exists()) signingConfigs.getByName("upload") else signingConfigs.getByName("debug")'
+  }
   if ($g -notmatch 'desugar_jdk_libs') {
     $g = $g.TrimEnd() + "`n`ndependencies {`n    coreLibraryDesugaring(""com.android.tools:desugar_jdk_libs:2.1.4"")`n}`n"
   }

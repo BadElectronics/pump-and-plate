@@ -297,6 +297,16 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
                 SettingRow(
+                  label: 'Privacy policy',
+                  note: 'Your data stays on this phone',
+                  trailing: TextButton(
+                    key: const ValueKey('privacy-policy'),
+                    onPressed: () => openPrivacyPolicy(context),
+                    style: TextButton.styleFrom(foregroundColor: c.accent),
+                    child: const Text('Open'),
+                  ),
+                ),
+                SettingRow(
                   label: 'Report a bug or suggest a feature',
                   note: 'Opens an email; nothing is sent until you tap Send',
                   trailing: TextButton(

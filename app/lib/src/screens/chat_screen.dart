@@ -13,9 +13,11 @@ import '../ai/plan_intents.dart';
 import '../ai/router.dart';
 import '../ai/tools.dart';
 import '../calc/calc.dart';
+import '../config.dart';
 import '../data/models.dart';
 import '../data/muscles.dart';
 import '../services/ai_engine.dart';
+import '../services/phone.dart';
 import '../services/services_scope.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
@@ -1419,6 +1421,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Starts an email to us about an AI answer that was wrong, harmful or
+  /// offensive. The person sees and can edit everything before sending.
+  Future<void> _reportReply(String reply) async {
+    final tier = tierByName(AppScope.of(context).settings.aiTier);
+    final model = tier == null ? 'unknown model' : modelFor(tier).name;
+    final quoted = reply.length > 1500 ? '${reply.substring(0, 1500)}...' : reply;
+    final ok = await Phone.email(
+      to: supportEmail,
+      subject: '$appName: AI reply report',
+      body: 'What was wrong with this reply:\n\n\n'
+          '---\nThe reply:\n$quoted\n---\n$appName $buildLabel, $model',
+    );
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('No email app opened. Write to $supportEmail and paste the reply.'),
+      ));
+    }
+  }
+
   /// Handles an AI function call by showing a card, and nothing else: the
   /// AI never changes data by itself. Checked on every call (in development
   /// builds and tests, any data written here stops with an error).
@@ -1656,16 +1677,38 @@ class _ChatScreenState extends State<ChatScreen> {
           alignment: Alignment.centerLeft,
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.86),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(18)),
-              child: shown.isEmpty && !item.done
-                  ? SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: c.accent),
-                    )
-                  : SelectableText(shown, style: AppText.body(c).copyWith(fontSize: 15, height: 1.4)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(color: c.surface, borderRadius: BorderRadius.circular(18)),
+                  child: shown.isEmpty && !item.done
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: c.accent),
+                        )
+                      : SelectableText(shown, style: AppText.body(c).copyWith(fontSize: 15, height: 1.4)),
+                ),
+                // Lets anyone flag a bad or offensive answer (Google Play's AI
+                // rules). It only opens an email; nothing is sent until they
+                // tap Send there.
+                if (item.done && shown.isNotEmpty)
+                  TextButton.icon(
+                    key: const ValueKey('ai-report'),
+                    onPressed: () => _reportReply(shown),
+                    icon: Icon(Icons.flag_outlined, size: 15, color: c.muted),
+                    label: Text('Report', style: AppText.quiet(c).copyWith(fontSize: 12)),
+                    style: TextButton.styleFrom(
+                      foregroundColor: c.muted,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      minimumSize: const Size(0, 32),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+              ],
             ),
           ),
         );

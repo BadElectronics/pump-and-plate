@@ -52,6 +52,14 @@ Future<void> openYouTube(BuildContext context) async {
   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Couldn\'t open YouTube on this phone.')));
 }
 
+Future<void> openPrivacyPolicy(BuildContext context) async {
+  final ok = await Phone.openUrl(privacyPolicyUrl);
+  if (ok || !context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Couldn\'t open a browser. The policy is at $privacyPolicyUrl')),
+  );
+}
+
 /// Tips, the YouTube channel, and bug reports.
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
