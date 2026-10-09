@@ -98,7 +98,7 @@ class _SupportScreenState extends State<SupportScreen> {
     if (!mounted) return;
     setState(() => _waiting = false);
     final text = switch (o) {
-      TipOutcome.thanks => 'Thank you! That really helps keep $appName going.',
+      TipOutcome.thanks => 'Thanks for supporting $appName! Tips help so much!',
       TipOutcome.pending => 'Your tip is waiting on the store. Thank you!',
       TipOutcome.failed => 'The tip didn\'t go through. You weren\'t charged.',
       TipOutcome.cancelled => null,
