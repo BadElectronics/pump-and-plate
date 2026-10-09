@@ -239,6 +239,21 @@ jobs:
           git commit -qm "Logs from run ${{ github.run_id }}, ${{ github.job }}"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/ci-logs-${{ github.job }}
 
+  # Checks the Google Play upload robot can reach the app. Read-only: it
+  # opens a draft and throws it away, so nothing on Google Play changes.
+  play-access:
+    name: Google Play access check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet google-auth requests
+      - name: Check the upload robot
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: python3 scripts/check-play-access.py
+
   # Sends the signed Google Play file to the Production track, only when a
   # version tag is pushed (never on ordinary pushes). Needs the
   # PLAY_SERVICE_ACCOUNT_JSON secret: a Google Cloud service account invited
