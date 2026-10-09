@@ -13,6 +13,10 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
+# Write access only so a failed job can save its log to a ci-logs-* branch.
+permissions:
+  contents: write
+
 jobs:
   test:
     name: Tests
@@ -29,8 +33,28 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       - name: Analyze (warnings shown, not fatal)
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-      - run: flutter test
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          set -o pipefail
+          flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee "$RUNNER_TEMP/logs/analyze.log"
+      - name: Run the tests
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee "$RUNNER_TEMP/logs/test.log"
+      - name: Save the log of a failed build
+        if: failure()
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/logs"
+          git init -q
+          git config user.name "build"
+          git config user.email "build@users.noreply.github.com"
+          git add -A
+          git commit -qm "Logs from run ${{ github.run_id }}, ${{ github.job }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/ci-logs-${{ github.job }}
 
   android:
     name: Android build
@@ -52,14 +76,32 @@ jobs:
         run: flutter create . --platforms=android --org com.fitapp --project-name fitapp
       - name: Apply the app's Android settings
         shell: pwsh
-        run: ../scripts/patch-android.ps1 -AppDir $PWD
+        run: |
+          New-Item -ItemType Directory -Force -Path "$env:RUNNER_TEMP/logs" | Out-Null
+          ../scripts/patch-android.ps1 -AppDir $PWD *>&1 | Tee-Object -FilePath "$env:RUNNER_TEMP/logs/patch-android.log"
       - run: flutter pub get
-      - run: flutter build apk --debug
+      - name: Build the Android app
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          set -o pipefail
+          flutter build apk --debug 2>&1 | tee "$RUNNER_TEMP/logs/build-android.log"
       - uses: actions/upload-artifact@v4
         with:
           name: android-debug-apk
           path: app/build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 7
+      - name: Save the log of a failed build
+        if: failure()
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/logs"
+          git init -q
+          git config user.name "build"
+          git config user.email "build@users.noreply.github.com"
+          git add -A
+          git commit -qm "Logs from run ${{ github.run_id }}, ${{ github.job }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/ci-logs-${{ github.job }}
 
   ios:
     name: iPhone build
@@ -83,6 +125,25 @@ jobs:
         run: flutter create . --platforms=ios --org com.fitapp --project-name fitapp
       - run: flutter pub get
       - name: Apply the app's iPhone settings
-        run: bash ../scripts/patch-ios.sh .
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          set -o pipefail
+          bash ../scripts/patch-ios.sh . 2>&1 | tee "$RUNNER_TEMP/logs/patch-ios.log"
       - name: Build for iPhone (unsigned)
-        run: flutter build ios --release --no-codesign
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          set -o pipefail
+          flutter build ios --release --no-codesign 2>&1 | tee "$RUNNER_TEMP/logs/build-ios.log"
+      - name: Save the log of a failed build
+        if: failure()
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/logs"
+          git init -q
+          git config user.name "build"
+          git config user.email "build@users.noreply.github.com"
+          git add -A
+          git commit -qm "Logs from run ${{ github.run_id }}, ${{ github.job }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/ci-logs-${{ github.job }}
