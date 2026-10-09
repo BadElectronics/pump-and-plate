@@ -34,14 +34,16 @@ if (Test-Path $kts) {
   # it, release builds keep using the debug key, as build.bat always has.
   if ($g -notmatch 'keystoreProperties') {
     $signing = @'
-val keystoreProperties = java.util.Properties()
+val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
-    keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 '@
     $g = ([regex]'(?m)^android\s*\{').Replace($g, $signing + "android {`n    signingConfigs {`n        create(""upload"") {`n            if (keystorePropertiesFile.exists()) {`n                keyAlias = keystoreProperties[""keyAlias""] as String`n                keyPassword = keystoreProperties[""keyPassword""] as String`n                storeFile = file(keystoreProperties[""storeFile""] as String)`n                storePassword = keystoreProperties[""storePassword""] as String`n            }`n        }`n    }", 1)
+    # Imports go at the very top (inside Gradle files, "java." means Gradle's Java settings).
+    $g = "import java.io.FileInputStream`nimport java.util.Properties`n`n" + $g
     $g = $g -replace 'signingConfig\s*=\s*signingConfigs\.getByName\("debug"\)', 'signingConfig = if (keystorePropertiesFile.exists()) signingConfigs.getByName("upload") else signingConfigs.getByName("debug")'
   }
   if ($g -notmatch 'desugar_jdk_libs') {
