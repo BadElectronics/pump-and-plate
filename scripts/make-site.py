@@ -29,6 +29,11 @@ PLACEHOLDERS = {
 
 NAV = [("index.html", "Home"), ("privacy.html", "Privacy"), ("support.html", "Support")]
 
+# How each page is linked and its one official address. Home is linked as the
+# site root, never as index.html, so Google doesn't see two copies of it.
+HREF = {"index.html": "./", "privacy.html": "privacy.html", "support.html": "support.html"}
+PATH = {"index.html": "", "privacy.html": "privacy.html", "support.html": "support.html"}
+
 
 def fill(text, values, in_attr=False):
     def sub(m):
@@ -49,17 +54,19 @@ def page(name, values, wrapped=True):
     description = re.search(r"<!-- description: (.*?) -->", raw).group(1)
     body = re.sub(r"<!-- (title|description): .*? -->\n", "", raw)
     nav = "\n".join(
-        f'      <a href="{href}"{" aria-current=\"page\"" if href == name else ""}>{label}</a>' for href, label in NAV
+        f'      <a href="{HREF[href]}"{" aria-current=\"page\"" if href == name else ""}>{label}</a>' for href, label in NAV
     )
     llc = values.get("LLC") or ""
     footer_owner = f"© 2026 {llc}" if llc else f'© 2026 <span class="ph">{PLACEHOLDERS["LLC"]}</span>'
+    domain = values.get("DOMAIN") or ""
+    canonical = f'<link rel="canonical" href="https://{domain}/{PATH[name]}">\n' if domain else ""
     inner = f"""<title>{title}</title>
 <meta name="description" content="{description}">
-<link rel="stylesheet" href="style.css">
+{canonical}<link rel="stylesheet" href="style.css">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <header class="wrap bar">
-  <a class="brand" href="index.html"><img src="favicon.png" alt="" width="32" height="32">Pump and Plate</a>
+  <a class="brand" href="./"><img src="favicon.png" alt="" width="32" height="32">Pump and Plate</a>
   <nav class="nav" aria-label="Pages">
 {nav}
   </nav>
@@ -114,6 +121,16 @@ def build(out, values, preview=False):
         (out / ".nojekyll").write_text("")
         if domain:
             (out / "CNAME").write_text(domain + "\n")
+            # Tell search engines the pages that exist, and where the list is.
+            urls = "\n".join(
+                f"  <url><loc>https://{domain}/{PATH[name]}</loc></url>" for name, _ in NAV
+            )
+            (out / "sitemap.xml").write_text(
+                '<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                f"{urls}\n</urlset>\n"
+            )
+            (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: https://{domain}/sitemap.xml\n")
 
 
 def main():
