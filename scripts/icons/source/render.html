@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Plate;src:url(archivo-black.woff2)}
+@font-face{font-family:Geist;src:url(Geist-SemiBold.ttf);font-weight:600}
+html,body{margin:0;background:#f4f2ee;font-family:Geist,sans-serif}
+#out{display:flex;gap:28px;padding:28px}
+.c{display:flex;flex-direction:column;align-items:center;gap:12px}
+.c b{font-size:20px;color:#1b1c1e}
+.ios svg{border-radius:22.4%;display:block;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.and svg{display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.18))}
+.row{display:flex;gap:18px;align-items:center}
+.cmp{display:flex;flex-direction:column;align-items:center;gap:10px}
+</style></head><body><div id="out"></div>
+<script src="art.js"></script>
+<script>
+const q=new URLSearchParams(location.search);
+const mode=q.get('mode')||'sheet';
+const out=document.getElementById('out');
+if(mode==='single'){ // one 1024 icon, for files
+  document.body.style.background='transparent'; document.documentElement.style.background='transparent'; out.style.padding='0';
+  const k=q.get('k'), a=q.get('a');
+  let m=a?svgAndroid(k,1024):svg(k,1024);
+  if(q.get('nobg')) m=m.replace(bg,'');
+  out.innerHTML=m;
+} else {
+  out.innerHTML=(q.get('set')||'current,a,b,c').split(',').map(k=>`<div class="c"><b>${DESIGNS[k].label}</b>
+    <div class="row"><div class="ios">${svg(k,240)}</div><div class="and">${svgAndroid(k,240)}</div></div>
+    <div class="row"><div class="ios">${svg(k,60)}</div><div class="and">${svgAndroid(k,56)}</div><div class="ios">${svg(k,40)}</div></div></div>`).join('');
+}
+document.fonts.load('40px Plate').then(()=>document.fonts.ready).then(()=>{window.ready=true});
+</script></body></html>
