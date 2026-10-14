@@ -261,7 +261,7 @@ jobs:
             --build-name ${{ steps.version.outputs.name }} \
             --build-number ${{ steps.version.outputs.number }} \
             -v 2>&1 | tee "$RUNNER_TEMP/logs/build-ios.log"
-      - name: Add the App Store Connect key
+      - name: Make a signing certificate for this build
         id: asc
         if: steps.mode.outputs.upload == 'true'
         shell: bash
@@ -270,6 +270,7 @@ jobs:
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
         run: |
+          set -euo pipefail
           key_id=$(printf '%s' "$KEY_ID" | tr -d ' \r\n')
           issuer=$(printf '%s' "$ISSUER" | tr -d ' \r\n')
           mkdir -p "$RUNNER_TEMP/asc"
@@ -277,16 +278,38 @@ jobs:
           printf '%s\n' "$KEY_P8" | tr -d '\r' > "$key_path"
           python3 -m venv "$RUNNER_TEMP/venv"
           "$RUNNER_TEMP/venv/bin/pip" install --quiet pyjwt cryptography
-          team=$(APP_STORE_CONNECT_ISSUER_ID="$issuer" APP_STORE_CONNECT_KEY_ID="$key_id" \
-                 APP_STORE_CONNECT_KEY_PATH="$key_path" \
-                 "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-team-id.py com.pumpandplate.app)
-          echo "Signing for team $team."
+          p12_pw=$(uuidgen)
+          export APP_STORE_CONNECT_ISSUER_ID="$issuer" APP_STORE_CONNECT_KEY_ID="$key_id" APP_STORE_CONNECT_KEY_PATH="$key_path"
+          "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-signing.py setup com.pumpandplate.app "$RUNNER_TEMP/asc" "$p12_pw" > "$RUNNER_TEMP/asc/out.txt"
+          cat "$RUNNER_TEMP/asc/out.txt" >> "$GITHUB_OUTPUT"
           {
             echo "key_path=$key_path"
             echo "key_id=$key_id"
             echo "issuer=$issuer"
-            echo "team=$team"
           } >> "$GITHUB_OUTPUT"
+          # A throwaway keychain holding only this build's certificate.
+          kc="$RUNNER_TEMP/asc/signing.keychain-db"
+          kc_pw=$(uuidgen)
+          security create-keychain -p "$kc_pw" "$kc"
+          security set-keychain-settings -lut 21600 "$kc"
+          security unlock-keychain -p "$kc_pw" "$kc"
+          curl -fsSL -o "$RUNNER_TEMP/asc/wwdr.cer" https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer
+          security import "$RUNNER_TEMP/asc/wwdr.cer" -k "$kc" -A || true
+          security import "$RUNNER_TEMP/asc/dist.p12" -k "$kc" -P "$p12_pw" -f pkcs12 -A -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$kc_pw" "$kc" >/dev/null
+          security list-keychains -d user -s "$kc" $(security list-keychains -d user | tr -d '"')
+          security find-identity -v -p codesigning "$kc"
+          echo "keychain=$kc" >> "$GITHUB_OUTPUT"
+          # Install the profile where Xcode looks for it.
+          uuid=$(grep '^profile_uuid=' "$RUNNER_TEMP/asc/out.txt" | cut -d= -f2)
+          for d in "$HOME/Library/MobileDevice/Provisioning Profiles" "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"; do
+            mkdir -p "$d"
+            cp "$RUNNER_TEMP/asc/profile.mobileprovision" "$d/$uuid.mobileprovision"
+          done
+          team=$(grep '^team=' "$RUNNER_TEMP/asc/out.txt" | cut -d= -f2)
+          name=$(grep '^profile_name=' "$RUNNER_TEMP/asc/out.txt" | cut -d= -f2-)
+          python3 ../scripts/ios-manual-signing.py ios/Runner.xcodeproj/project.pbxproj com.pumpandplate.app "$team" "$name"
+          echo "Signing for team $team with profile \"$name\"."
       - name: Sign the app
         if: steps.mode.outputs.upload == 'true'
         shell: bash
@@ -295,11 +318,7 @@ jobs:
           xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "${{ steps.asc.outputs.key_path }}" \
-            -authenticationKeyID "${{ steps.asc.outputs.key_id }}" \
-            -authenticationKeyIssuerID "${{ steps.asc.outputs.issuer }}" \
-            DEVELOPMENT_TEAM="${{ steps.asc.outputs.team }}" \
+            OTHER_CODE_SIGN_FLAGS="--keychain ${{ steps.asc.outputs.keychain }}" \
             archive 2>&1 | tee "$RUNNER_TEMP/logs/archive-ios.log"
       - name: Send it to TestFlight
         if: steps.mode.outputs.upload == 'true'
@@ -314,7 +333,12 @@ jobs:
             <key>method</key><string>app-store-connect</string>
             <key>destination</key><string>upload</string>
             <key>teamID</key><string>${{ steps.asc.outputs.team }}</string>
-            <key>signingStyle</key><string>automatic</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.pumpandplate.app</key><string>${{ steps.asc.outputs.profile_name }}</string>
+            </dict>
             <key>uploadSymbols</key><true/>
             <key>manageAppVersionAndBuildNumber</key><false/>
           </dict>
@@ -330,10 +354,19 @@ jobs:
             -authenticationKeyIssuerID "${{ steps.asc.outputs.issuer }}" \
             2>&1 | tee "$RUNNER_TEMP/logs/upload-ios.log"
           echo "Uploaded version ${{ steps.version.outputs.name }} (${{ steps.version.outputs.number }}). Apple processes it for TestFlight in about 5 to 30 minutes."
-      - name: Remove the App Store Connect key
+      - name: Revoke this build's certificate and remove the key
         if: always() && steps.mode.outputs.upload == 'true'
         shell: bash
-        run: rm -rf "$RUNNER_TEMP/asc"
+        run: |
+          if [ -n "${{ steps.asc.outputs.cert_id }}" ]; then
+            APP_STORE_CONNECT_ISSUER_ID="${{ steps.asc.outputs.issuer }}" \
+            APP_STORE_CONNECT_KEY_ID="${{ steps.asc.outputs.key_id }}" \
+            APP_STORE_CONNECT_KEY_PATH="${{ steps.asc.outputs.key_path }}" \
+              "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-signing.py cleanup \
+              "${{ steps.asc.outputs.cert_id }}" "${{ steps.asc.outputs.profile_id }}" || true
+          fi
+          [ -n "${{ steps.asc.outputs.keychain }}" ] && security delete-keychain "${{ steps.asc.outputs.keychain }}" || true
+          rm -rf "$RUNNER_TEMP/asc"
       - name: Save the log of a failed build
         if: failure()
         shell: bash
