@@ -2,7 +2,9 @@
 # Android: makes the Google Play file (.aab) and an APK for sideloading, signed
 # with the upload key when the ANDROID_KEYSTORE_* secrets are set (made by
 # make-upload-key.bat). Nothing is uploaded to the stores from here.
-# iPhone: builds unsigned, to check it compiles.
+# iPhone: builds unsigned on ordinary pushes, to check it compiles. On a
+# version tag or a manual run it signs the app and sends it to TestFlight,
+# using the APP_STORE_CONNECT_* secrets.
 name: Build
 
 on:
@@ -221,12 +223,117 @@ jobs:
           mkdir -p "$RUNNER_TEMP/logs"
           set -o pipefail
           bash ../scripts/patch-ios.sh . 2>&1 | tee "$RUNNER_TEMP/logs/patch-ios.log"
-      - name: Build for iPhone (unsigned)
+      - name: Work out the version
+        id: version
+        shell: bash
+        run: |
+          # Same version and build number scheme as the Android build.
+          label=$(sed -nE "s/.*buildLabel = 'Phase ([0-9]+), build ([0-9]+)'.*/\1.\2/p" lib/src/config.dart)
+          [ -n "$label" ] || { echo "Couldn't read buildLabel from config.dart"; exit 1; }
+          echo "name=1.$label" >> "$GITHUB_OUTPUT"
+          echo "number=$((1000 + ${{ github.run_number }}))" >> "$GITHUB_OUTPUT"
+          echo "Version 1.$label, build $((1000 + ${{ github.run_number }}))"
+      - name: Decide whether to send it to TestFlight
+        id: mode
+        shell: bash
+        env:
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [ -z "$ISSUER" ] || [ -z "$KEY_ID" ] || [ -z "$KEY_P8" ]; then
+              echo "::error::Add the APP_STORE_CONNECT_ISSUER_ID, _KEY_ID and _KEY_P8 secrets to send builds to TestFlight."
+              exit 1
+            fi
+            echo "upload=true" >> "$GITHUB_OUTPUT"
+            echo "This build will be signed and sent to TestFlight."
+          else
+            echo "upload=false" >> "$GITHUB_OUTPUT"
+            echo "Unsigned check build only."
+          fi
+      - name: Build for iPhone
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/logs"
           set -o pipefail
-          flutter build ios --release --no-codesign -v 2>&1 | tee "$RUNNER_TEMP/logs/build-ios.log"
+          flutter build ios --release --no-codesign \
+            --build-name ${{ steps.version.outputs.name }} \
+            --build-number ${{ steps.version.outputs.number }} \
+            -v 2>&1 | tee "$RUNNER_TEMP/logs/build-ios.log"
+      - name: Add the App Store Connect key
+        id: asc
+        if: steps.mode.outputs.upload == 'true'
+        shell: bash
+        env:
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+        run: |
+          key_id=$(printf '%s' "$KEY_ID" | tr -d ' \r\n')
+          issuer=$(printf '%s' "$ISSUER" | tr -d ' \r\n')
+          mkdir -p "$RUNNER_TEMP/asc"
+          key_path="$RUNNER_TEMP/asc/AuthKey_$key_id.p8"
+          printf '%s\n' "$KEY_P8" | tr -d '\r' > "$key_path"
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet pyjwt cryptography
+          team=$(APP_STORE_CONNECT_ISSUER_ID="$issuer" APP_STORE_CONNECT_KEY_ID="$key_id" \
+                 APP_STORE_CONNECT_KEY_PATH="$key_path" \
+                 "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-team-id.py com.pumpandplate.app)
+          echo "Signing for team $team."
+          {
+            echo "key_path=$key_path"
+            echo "key_id=$key_id"
+            echo "issuer=$issuer"
+            echo "team=$team"
+          } >> "$GITHUB_OUTPUT"
+      - name: Sign the app
+        if: steps.mode.outputs.upload == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "${{ steps.asc.outputs.key_path }}" \
+            -authenticationKeyID "${{ steps.asc.outputs.key_id }}" \
+            -authenticationKeyIssuerID "${{ steps.asc.outputs.issuer }}" \
+            DEVELOPMENT_TEAM="${{ steps.asc.outputs.team }}" \
+            archive 2>&1 | tee "$RUNNER_TEMP/logs/archive-ios.log"
+      - name: Send it to TestFlight
+        if: steps.mode.outputs.upload == 'true'
+        shell: bash
+        run: |
+          set -o pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${{ steps.asc.outputs.team }}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "${{ steps.asc.outputs.key_path }}" \
+            -authenticationKeyID "${{ steps.asc.outputs.key_id }}" \
+            -authenticationKeyIssuerID "${{ steps.asc.outputs.issuer }}" \
+            2>&1 | tee "$RUNNER_TEMP/logs/upload-ios.log"
+          echo "Uploaded version ${{ steps.version.outputs.name }} (${{ steps.version.outputs.number }}). Apple processes it for TestFlight in about 5 to 30 minutes."
+      - name: Remove the App Store Connect key
+        if: always() && steps.mode.outputs.upload == 'true'
+        shell: bash
+        run: rm -rf "$RUNNER_TEMP/asc"
       - name: Save the log of a failed build
         if: failure()
         shell: bash

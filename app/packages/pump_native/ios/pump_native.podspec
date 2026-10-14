@@ -8,6 +8,8 @@ Pod::Spec.new do |s|
   s.author           = { 'Pump and Plate' => 'support@example.com' }
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*.swift'
+  # Apple's privacy manifest: why the free-space check exists.
+  s.resource_bundles = { 'pump_native_privacy' => ['Resources/PrivacyInfo.xcprivacy'] }
   s.dependency 'Flutter'
   s.platform         = :ios, '16.0'
   s.swift_version    = '5.9'
