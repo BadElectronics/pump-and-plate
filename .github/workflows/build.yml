@@ -1,29 +1,73 @@
 # Builds and tests Pump and Plate on every push, on GitHub's own computers.
 # Android: makes the Google Play file (.aab) and an APK for sideloading, signed
 # with the upload key when the ANDROID_KEYSTORE_* secrets are set (made by
-# make-upload-key.bat). Nothing is uploaded to the stores from here.
+# make-upload-key.bat).
 # iPhone: builds unsigned on ordinary pushes, to check it compiles. On a
-# version tag or a manual run it signs the app and sends it to TestFlight,
-# using the APP_STORE_CONNECT_* secrets.
+# release or a manual run it signs the app and sends it to TestFlight, using
+# the APP_STORE_CONNECT_* secrets.
+#
+# Releasing: put the version to ship in store/release.txt (say 1.5.20) and
+# push. When it matches the version in app/lib/src/config.dart and no
+# v1.5.20 tag exists yet, that push is a release: the Android build goes to
+# Google Play Production, the iPhone build goes to TestFlight, and the build
+# then tags the commit v1.5.20 so the same version is never shipped twice.
+# Pushing a v* tag by hand works too.
 name: Build
 
 on:
   push:
     branches: [main]
-    # A version tag (v1.5.20 and so on) also sends the build to Google Play.
     tags: ['v*']
   pull_request:
   workflow_dispatch:
 
+# Pushes queue up instead of cancelling each other, so a release that is
+# half-way through uploading is never cut off by the next push.
 concurrency:
   group: build-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
-# Write access only so a failed job can save its log to a ci-logs-* branch.
+# Write access so a release can tag the commit and a failed job can save its
+# log to a ci-logs-* branch.
 permissions:
   contents: write
 
 jobs:
+  # Works out whether this push is a release (see the top of this file).
+  release:
+    name: Release check
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.decide.outputs.release }}
+      version: ${{ steps.decide.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare store/release.txt with the app's version
+        id: decide
+        shell: bash
+        run: |
+          label=$(sed -nE "s/.*buildLabel = 'Phase ([0-9]+), build ([0-9]+)'.*/\1.\2/p" app/lib/src/config.dart)
+          [ -n "$label" ] || { echo "Couldn't read buildLabel from config.dart"; exit 1; }
+          version="1.$label"
+          wanted=$(tr -d ' \r\n' < store/release.txt 2>/dev/null || true)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Release::Tag ${{ github.ref_name }} pushed by hand: releasing version $version."
+          elif [[ "${{ github.event_name }}" != "push" || "${{ github.ref }}" != "refs/heads/main" ]]; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "Not a push to main, so not a release."
+          elif [ "$wanted" != "$version" ]; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "store/release.txt says ${wanted:-nothing}; the app is $version. Check build only."
+          elif git ls-remote --tags origin "refs/tags/v$version" | grep -q .; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "Version $version was already released (tag v$version exists). Check build only."
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Release::store/release.txt says $version and it hasn't shipped yet: this build goes to Google Play and TestFlight."
+          fi
+
   test:
     name: Tests
     runs-on: ubuntu-latest
@@ -198,6 +242,7 @@ jobs:
 
   ios:
     name: iPhone build
+    needs: [release]
     runs-on: macos-26
     defaults:
       run:
@@ -241,7 +286,7 @@ jobs:
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ "${{ needs.release.outputs.release }}" == "true" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             if [ -z "$ISSUER" ] || [ -z "$KEY_ID" ] || [ -z "$KEY_P8" ]; then
               echo "::error::Add the APP_STORE_CONNECT_ISSUER_ID, _KEY_ID and _KEY_P8 secrets to send builds to TestFlight."
               exit 1
@@ -394,15 +439,15 @@ jobs:
           PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
         run: python3 scripts/check-play-access.py
 
-  # Sends the signed Google Play file to the Production track, only when a
-  # version tag is pushed (never on ordinary pushes). Needs the
-  # PLAY_SERVICE_ACCOUNT_JSON secret: a Google Cloud service account invited
-  # in Play Console with permission to release. Google still reviews each
-  # update before it reaches people.
+  # Sends the signed Google Play file to the Production track, only on a
+  # release (see the top of this file). Needs the PLAY_SERVICE_ACCOUNT_JSON
+  # secret: a Google Cloud service account invited in Play Console with
+  # permission to release. Google still reviews each update before it
+  # reaches people.
   publish:
     name: Publish to Google Play
-    needs: [test, android]
-    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [release, test, android]
+    if: needs.release.outputs.release == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -428,3 +473,13 @@ jobs:
           track: production
           status: completed
           whatsNewDirectory: store/whatsnew
+      - name: Tag the released commit
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        shell: bash
+        run: |
+          v="v${{ needs.release.outputs.version }}"
+          git config user.name "build"
+          git config user.email "build@users.noreply.github.com"
+          git tag -a "$v" -m "Pump and Plate ${{ needs.release.outputs.version }}"
+          git push origin "$v"
+          echo "::notice title=Released::Version ${{ needs.release.outputs.version }} sent to Google Play and tagged $v."
