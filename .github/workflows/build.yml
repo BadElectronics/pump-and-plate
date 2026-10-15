@@ -146,8 +146,16 @@ jobs:
       - name: Save the log of a failed build
         if: failure()
         shell: bash
+        env:
+          # Blanked out of the saved log, which is public.
+          HIDE_1: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          HIDE_2: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           cd "$RUNNER_TEMP/logs"
+          for name in HIDE_1 HIDE_2; do
+            V=$(printf '%s' "${!name}" | tr -d ' \r\n'); export V
+            [ -n "$V" ] && grep -rlF -- "$V" . | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
+          done
           git init -q
           git config user.name "build"
           git config user.email "build@users.noreply.github.com"
@@ -281,8 +289,16 @@ jobs:
       - name: Save the log of a failed build
         if: failure()
         shell: bash
+        env:
+          # Blanked out of the saved log, which is public.
+          HIDE_1: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          HIDE_2: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           cd "$RUNNER_TEMP/logs"
+          for name in HIDE_1 HIDE_2; do
+            V=$(printf '%s' "${!name}" | tr -d ' \r\n'); export V
+            [ -n "$V" ] && grep -rlF -- "$V" . | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
+          done
           git init -q
           git config user.name "build"
           git config user.email "build@users.noreply.github.com"
@@ -479,8 +495,16 @@ jobs:
       - name: Save the log of a failed build
         if: failure()
         shell: bash
+        env:
+          # Blanked out of the saved log, which is public.
+          HIDE_1: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          HIDE_2: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
           cd "$RUNNER_TEMP/logs"
+          for name in HIDE_1 HIDE_2; do
+            V=$(printf '%s' "${!name}" | tr -d ' \r\n'); export V
+            [ -n "$V" ] && grep -rlF -- "$V" . | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
+          done
           git init -q
           git config user.name "build"
           git config user.email "build@users.noreply.github.com"
