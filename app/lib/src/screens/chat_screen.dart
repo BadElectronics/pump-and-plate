@@ -258,7 +258,36 @@ List<String> _strings(Object? v) => [
     ];
 
 /// Hides any thinking text a model emits.
-String _visible(String text) => text.replaceAll(RegExp(r'<think>[\s\S]*?(</think>|$)'), '').trim();
+String _visible(String text) => text
+    .replaceAll(RegExp(r'<think>[\s\S]*?(</think>|$)'), '')
+    // The models' own markers (turn, channel and tool tags), which a small
+    // model sometimes lets through. Never meant to be read.
+    .replaceAll(_controlToken, '')
+    .trim();
+
+final _controlToken = RegExp(
+  r'<\|?/?(?:channel|think|thought|start_of_turn|end_of_turn|start_of_image|im_start|im_end|tool_call|tool_response|eos|bos)\|?>',
+  caseSensitive: false,
+);
+
+/// True when the end of [text] is one short chunk repeated over and over:
+/// a small model stuck in a loop, which never recovers on its own.
+bool _isStuck(String text) {
+  if (text.length < 120) return false;
+  final tail = text.substring(text.length - 120);
+  for (var n = 1; n <= 16; n++) {
+    final chunk = tail.substring(tail.length - n);
+    if (chunk.trim().isEmpty) continue;
+    var repeats = 0;
+    var i = tail.length - n;
+    while (i >= 0 && tail.substring(i, i + n) == chunk) {
+      repeats++;
+      i -= n;
+    }
+    if (repeats * n >= 96) return true;
+  }
+  return false;
+}
 
 // ------------------------------------------------------------------ screen
 
@@ -1404,18 +1433,33 @@ class _ChatScreenState extends State<ChatScreen> {
     final item = _AiItem();
     _add(item);
     AiCall? call;
+    var stuck = false;
     await for (final e in stream) {
       if (!mounted || _stopping) break;
       switch (e) {
         case AiText(:final text):
           setState(() => item.text += text);
           _toBottom();
+          if (_isStuck(item.text)) {
+            // Stop the model rather than let it fill the screen.
+            stuck = true;
+            await chat.stop();
+          }
         case AiCall():
           call ??= e;
           _handleCall(e);
       }
+      if (stuck) break;
     }
     item.done = true;
+    if (mounted && stuck) {
+      setState(() => _log.remove(item));
+      final tier = tierByName(AppScope.of(context).settings.aiTier);
+      final name = tier == null ? 'The model' : 'The ${tier.label} model';
+      _add(_NoteItem('$name got stuck repeating itself, so it was stopped. '
+          'Try asking again in different words${tier == AiTier.light ? ', or pick a bigger model in Settings' : ''}.'));
+      return;
+    }
     if (mounted && _visible(item.text).isEmpty) setState(() => _log.remove(item));
     final made = call;
     if (made != null && depth < 1 && mounted && !_stopping) {

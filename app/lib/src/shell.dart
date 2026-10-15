@@ -247,6 +247,17 @@ class _AppShellState extends State<AppShell> with SingleTickerProviderStateMixin
                         ),
                       ),
                     ),
+                  // A swipe in from the left edge goes Home, like the back
+                  // swipe on iPhone. Only the edge, so swiping inside a
+                  // calendar or a chart is left alone.
+                  if (pageView != null && t >= 1 && tour == null)
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      bottom: barSpace,
+                      width: 24,
+                      child: _EdgeSwipe(onBack: _home),
+                    ),
                   // Home stays built (hidden, animations paused) while a
                   // section is open, so coming back doesn't have to rebuild
                   // it on the first frame, which caused a visible hitch.
@@ -298,6 +309,35 @@ class _AppShellState extends State<AppShell> with SingleTickerProviderStateMixin
 
 /// Home button plus the six sections. The open one is highlighted and a
 /// touch larger.
+/// A strip along the left edge: drag it rightwards to go back. Taps fall
+/// through to whatever is underneath.
+class _EdgeSwipe extends StatefulWidget {
+  const _EdgeSwipe({required this.onBack});
+
+  final VoidCallback onBack;
+
+  @override
+  State<_EdgeSwipe> createState() => _EdgeSwipeState();
+}
+
+class _EdgeSwipeState extends State<_EdgeSwipe> {
+  double _dx = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onHorizontalDragStart: (_) => _dx = 0,
+      onHorizontalDragUpdate: (d) => _dx += d.delta.dx,
+      onHorizontalDragEnd: (d) {
+        final flick = d.primaryVelocity ?? 0;
+        if (_dx > 60 || flick > 500) widget.onBack();
+      },
+      child: const SizedBox.expand(),
+    );
+  }
+}
+
 class _TabBar extends StatelessWidget {
   const _TabBar({required this.index, required this.onSelect, required this.onHome});
 

@@ -477,7 +477,17 @@ class _FitAppState extends State<FitApp> with WidgetsBindingObserver {
                 Duration(milliseconds: reduceMotion ? 0 : 250),
             themeAnimationCurve: Curves.easeOutCubic,
             builder: (context, child) {
-              Widget app = child!;
+              // A tap anywhere that isn't a field or a button closes the
+              // keyboard. iPhone has no back button, and its number pad has
+              // no Done key, so without this there was no way to put it away.
+              Widget app = GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  final focus = FocusManager.instance.primaryFocus;
+                  if (focus != null && focus.context != null) focus.unfocus();
+                },
+                child: child!,
+              );
               if (reduceMotion) {
                 app = MediaQuery(
                   data: MediaQuery.of(context).copyWith(disableAnimations: true),
