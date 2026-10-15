@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
 import '../ai/catalog.dart';
+import '../ai/thought_filter.dart';
 import 'ai_engine.dart';
 
 /// Runs the models with flutter_gemma's LiteRT-LM engine (registered in
@@ -286,9 +287,12 @@ class _GemmaChat implements AiChat {
   }
 
   Stream<AiEvent> _responses() async* {
+    // The runtime's thought channel isn't for people to read.
+    final thoughts = ThoughtFilter();
     await for (final r in _chat.generateChatResponseAsync()) {
       if (r is TextResponse) {
-        yield AiText(r.token);
+        final shown = thoughts.feed(r.token);
+        if (shown.isNotEmpty) yield AiText(shown);
       } else if (r is FunctionCallResponse) {
         yield AiCall(r.name, r.args);
       } else if (r is ParallelFunctionCallResponse) {
@@ -298,6 +302,8 @@ class _GemmaChat implements AiChat {
       }
       // Thinking text isn't shown.
     }
+    final rest = thoughts.flush();
+    if (rest.isNotEmpty) yield AiText(rest);
   }
 
   bool _closed = false;
