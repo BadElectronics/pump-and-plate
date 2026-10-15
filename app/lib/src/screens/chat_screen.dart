@@ -274,6 +274,10 @@ final _controlToken = RegExp(
 /// a small model stuck in a loop, which never recovers on its own.
 bool _isStuck(String text) {
   if (text.length < 120) return false;
+  // Many words, hardly any different ones: "thought okaythought, thought the
+  // thought" over and over.
+  final words = text.substring(text.length > 160 ? text.length - 160 : 0).toLowerCase().split(RegExp(r'[^a-z0-9]+')).where((w) => w.length > 1).toList();
+  if (words.length >= 16 && words.toSet().length <= 4) return true;
   final tail = text.substring(text.length - 120);
   for (var n = 1; n <= 16; n++) {
     final chunk = tail.substring(tail.length - n);

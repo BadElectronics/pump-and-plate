@@ -100,6 +100,25 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('a model looping on its thinking label in varied words is stopped', (tester) async {
+    // Seen on an iPhone: the thinking marker, over and over, never the same way twice.
+    final pieces = <String>[];
+    for (var i = 0; i < 80; i++) {
+      pieces.addAll(['thought', ' okay', 'thought,', 'thought', ' the ', 'thought ']);
+    }
+    final chat = await _ask(tester, pieces);
+    expect(chat.stopped, isTrue);
+    expect(chat.sent, lessThan(pieces.length));
+    expect(find.textContaining('got stuck repeating itself'), findsOneWidget);
+    expect(find.textContaining('okaythought'), findsNothing);
+  });
+
+  testWidgets('a short answer that repeats a word is not mistaken for a loop', (tester) async {
+    final chat = await _ask(tester, ['Sure, ', 'a snack tomorrow: ', 'I thought ', 'you thought ', 'of a snack, so I prepared a snack card.']);
+    expect(chat.stopped, isFalse);
+    expect(find.textContaining('got stuck'), findsNothing);
+  });
+
   testWidgets('stray control tokens are hidden from a normal answer', (tester) async {
     final chat = await _ask(tester, ['<|channel>', 'Sure, ', 'a snack ', 'tomorrow.', '<end_of_turn>']);
     expect(chat.stopped, isFalse);
