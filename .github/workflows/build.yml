@@ -4,7 +4,13 @@
 # make-upload-key.bat).
 # iPhone: builds unsigned on ordinary pushes, to check it compiles. On a
 # release or a manual run it signs the app and sends it to TestFlight, using
-# the APP_STORE_CONNECT_* secrets.
+# the APP_STORE_CONNECT_* secrets. It signs with the stored certificate in
+# the IOS_DIST_P12_BASE64 and IOS_DIST_P12_PASSWORD secrets, which App
+# Review needs (it re-checks the signature at submission). To make that
+# certificate: add the password secret, run this workflow by hand with
+# "Make a new signing certificate" ticked, download the file it leaves, and
+# put its text in IOS_DIST_P12_BASE64. Without those secrets a build signs
+# with a throwaway certificate, good for TestFlight only.
 #
 # Releasing: put the version to ship in store/release.txt (say 1.5.20) and
 # push. When it matches the version in app/lib/src/config.dart and no
@@ -20,6 +26,11 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      make_certificate:
+        description: 'Make a new signing certificate (needs the IOS_DIST_P12_PASSWORD secret) instead of building'
+        type: boolean
+        default: false
 
 # Pushes queue up instead of cancelling each other, so a release that is
 # half-way through uploading is never cut off by the next push.
@@ -33,9 +44,46 @@ permissions:
   contents: write
 
 jobs:
+  # One-off: makes the App Store signing certificate the iPhone builds use.
+  # Leaves a file to download; its text goes in the IOS_DIST_P12_BASE64
+  # secret. Delete the download from the run page afterwards.
+  certificate:
+    name: Make a signing certificate
+    if: inputs.make_certificate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet pyjwt cryptography
+      - name: Make the certificate
+        env:
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+          P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "$P12_PASSWORD" ]; then
+            echo "::error::Add the IOS_DIST_P12_PASSWORD secret first (a long password of your choice)."
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/cert"
+          key_id=$(printf '%s' "$KEY_ID" | tr -d ' \r\n')
+          printf '%s\n' "$KEY_P8" | tr -d '\r' > "$RUNNER_TEMP/AuthKey.p8"
+          APP_STORE_CONNECT_ISSUER_ID=$(printf '%s' "$ISSUER" | tr -d ' \r\n') \
+          APP_STORE_CONNECT_KEY_ID="$key_id" APP_STORE_CONNECT_KEY_PATH="$RUNNER_TEMP/AuthKey.p8" \
+            python3 scripts/apple-signing.py make-certificate "$RUNNER_TEMP/cert" "$P12_PASSWORD"
+          rm -f "$RUNNER_TEMP/cert/dist.p12" "$RUNNER_TEMP/AuthKey.p8"
+          echo "::notice title=Next step::Download 'ios-signing-certificate' from this run, open dist.p12.base64.txt, and put its whole text in the IOS_DIST_P12_BASE64 secret. Then delete the download from this page."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-signing-certificate
+          path: ${{ runner.temp }}/cert/dist.p12.base64.txt
+          retention-days: 1
+
   # Works out whether this push is a release (see the top of this file).
   release:
     name: Release check
+    if: ${{ !inputs.make_certificate }}
     runs-on: ubuntu-latest
     outputs:
       release: ${{ steps.decide.outputs.release }}
@@ -70,6 +118,7 @@ jobs:
 
   test:
     name: Tests
+    if: ${{ !inputs.make_certificate }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -108,6 +157,7 @@ jobs:
 
   android:
     name: Android build
+    if: ${{ !inputs.make_certificate }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -243,6 +293,7 @@ jobs:
   ios:
     name: iPhone build
     needs: [release]
+    if: ${{ !inputs.make_certificate }}
     runs-on: macos-26
     defaults:
       run:
@@ -306,7 +357,7 @@ jobs:
             --build-name ${{ steps.version.outputs.name }} \
             --build-number ${{ steps.version.outputs.number }} \
             -v 2>&1 | tee "$RUNNER_TEMP/logs/build-ios.log"
-      - name: Make a signing certificate for this build
+      - name: Get the signing certificate and a profile for this build
         id: asc
         if: steps.mode.outputs.upload == 'true'
         shell: bash
@@ -314,6 +365,8 @@ jobs:
           ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+          DIST_P12_BASE64: ${{ secrets.IOS_DIST_P12_BASE64 }}
+          DIST_P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
         run: |
           set -euo pipefail
           key_id=$(printf '%s' "$KEY_ID" | tr -d ' \r\n')
@@ -323,9 +376,18 @@ jobs:
           printf '%s\n' "$KEY_P8" | tr -d '\r' > "$key_path"
           python3 -m venv "$RUNNER_TEMP/venv"
           "$RUNNER_TEMP/venv/bin/pip" install --quiet pyjwt cryptography
-          p12_pw=$(uuidgen)
           export APP_STORE_CONNECT_ISSUER_ID="$issuer" APP_STORE_CONNECT_KEY_ID="$key_id" APP_STORE_CONNECT_KEY_PATH="$key_path"
-          "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-signing.py setup com.pumpandplate.app "$RUNNER_TEMP/asc" "$p12_pw" > "$RUNNER_TEMP/asc/out.txt"
+          if [ -n "$DIST_P12_BASE64" ] && [ -n "$DIST_P12_PASSWORD" ]; then
+            # The stored certificate: the same one on every build, never revoked.
+            p12_pw="$DIST_P12_PASSWORD"
+            printf '%s' "$DIST_P12_BASE64" | tr -d ' \r\n' | base64 -d > "$RUNNER_TEMP/asc/stored.p12"
+            "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-signing.py setup com.pumpandplate.app "$RUNNER_TEMP/asc" "$p12_pw" "$RUNNER_TEMP/asc/stored.p12" > "$RUNNER_TEMP/asc/out.txt"
+            echo "Signing with the stored certificate."
+          else
+            p12_pw=$(uuidgen)
+            "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-signing.py setup com.pumpandplate.app "$RUNNER_TEMP/asc" "$p12_pw" > "$RUNNER_TEMP/asc/out.txt"
+            echo "::warning title=Throwaway certificate::No IOS_DIST_P12_BASE64 and IOS_DIST_P12_PASSWORD secrets, so this build is signed with a certificate that is revoked afterwards. Fine for TestFlight; App Review rejects it (ITMS-90035). See the top of build.yml."
+          fi
           cat "$RUNNER_TEMP/asc/out.txt" >> "$GITHUB_OUTPUT"
           {
             echo "key_path=$key_path"
@@ -399,16 +461,18 @@ jobs:
             -authenticationKeyIssuerID "${{ steps.asc.outputs.issuer }}" \
             2>&1 | tee "$RUNNER_TEMP/logs/upload-ios.log"
           echo "Uploaded version ${{ steps.version.outputs.name }} (${{ steps.version.outputs.number }}). Apple processes it for TestFlight in about 5 to 30 minutes."
-      - name: Revoke this build's certificate and remove the key
+      - name: Remove this build's profile and key (and a throwaway certificate)
         if: always() && steps.mode.outputs.upload == 'true'
         shell: bash
         run: |
           if [ -n "${{ steps.asc.outputs.cert_id }}" ]; then
+            keep=""
+            [ "${{ steps.asc.outputs.cert_stored }}" = "true" ] && keep="keep-certificate"
             APP_STORE_CONNECT_ISSUER_ID="${{ steps.asc.outputs.issuer }}" \
             APP_STORE_CONNECT_KEY_ID="${{ steps.asc.outputs.key_id }}" \
             APP_STORE_CONNECT_KEY_PATH="${{ steps.asc.outputs.key_path }}" \
               "$RUNNER_TEMP/venv/bin/python" ../scripts/apple-signing.py cleanup \
-              "${{ steps.asc.outputs.cert_id }}" "${{ steps.asc.outputs.profile_id }}" || true
+              "${{ steps.asc.outputs.cert_id }}" "${{ steps.asc.outputs.profile_id }}" $keep || true
           fi
           [ -n "${{ steps.asc.outputs.keychain }}" ] && security delete-keychain "${{ steps.asc.outputs.keychain }}" || true
           rm -rf "$RUNNER_TEMP/asc"
@@ -428,7 +492,7 @@ jobs:
   # opens a draft and throws it away, so nothing on Google Play changes.
   play-access:
     name: Google Play access check
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && !inputs.make_certificate
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:

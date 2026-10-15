@@ -1,21 +1,34 @@
 #!/usr/bin/env python3
-"""Makes a short-lived App Store signing certificate and profile for the cloud
-build, and removes them afterwards. Nothing secret is kept between builds.
+"""App Store signing for the cloud build.
 
-Apple re-signs every build it accepts, so revoking the certificate after the
-upload doesn't affect builds already on TestFlight or the App Store.
+The build signs with a stored Apple Distribution certificate when the repo
+has one in its secrets (IOS_DIST_P12_BASE64 and IOS_DIST_P12_PASSWORD),
+which is what App Review needs: it checks a build's signature again at
+submission, so a certificate revoked after the upload fails with
+ITMS-90035. Without a stored certificate the build makes a throwaway one
+and revokes it afterwards, which is fine for TestFlight only.
 
 Needs the App Store Connect API key in the environment:
   APP_STORE_CONNECT_ISSUER_ID, APP_STORE_CONNECT_KEY_ID, APP_STORE_CONNECT_KEY_PATH
 
-  apple-signing.py setup BUNDLE_ID OUT_DIR P12_PASSWORD
-      Writes OUT_DIR/dist.p12 and OUT_DIR/profile.mobileprovision and prints
-      key=value lines: team, cert_id, profile_id, profile_name, profile_uuid.
-  apple-signing.py cleanup CERT_ID PROFILE_ID
+  apple-signing.py make-certificate OUT_DIR P12_PASSWORD
+      Makes a new Apple Distribution certificate and writes OUT_DIR/dist.p12
+      (protected by P12_PASSWORD) and OUT_DIR/dist.p12.base64.txt, the text
+      to put in the IOS_DIST_P12_BASE64 secret.
+  apple-signing.py setup BUNDLE_ID OUT_DIR P12_PASSWORD [STORED_P12]
+      Makes a provisioning profile for this build, using the stored
+      certificate when STORED_P12 is given (P12_PASSWORD must open it) or a
+      fresh throwaway one otherwise. Writes OUT_DIR/dist.p12 and
+      OUT_DIR/profile.mobileprovision and prints key=value lines:
+      team, cert_id, cert_stored, profile_id, profile_name, profile_uuid.
+  apple-signing.py cleanup CERT_ID PROFILE_ID [keep-certificate]
+      Deletes the profile, and the certificate unless told to keep it.
 """
 import base64
+import datetime
 import json
 import os
+import shutil
 import sys
 import time
 import urllib.error
@@ -65,21 +78,69 @@ def bundle(bundle_id):
     sys.exit(f"No App ID {bundle_id}. Register it at developer.apple.com → Identifiers.")
 
 
-def setup(bundle_id, out_dir, p12_password):
-    bundle_res, team = bundle(bundle_id)
+def p12_encryption(password):
+    # The older p12 encryption, which macOS's keychain tool can read.
+    return (serialization.PrivateFormat.PKCS12.encryption_builder()
+            .kdf_rounds(2048)
+            .key_cert_algorithm(pkcs12.PBES.PBESv1SHA1And3KeyTripleDESCBC)
+            .hmac_hash(hashes.SHA1())
+            .build(password.encode()))
 
-    # A new key and certificate request, made here and never stored.
+
+def new_certificate(common_name):
+    """A new key and Apple Distribution certificate. Returns (key, cert, cert_id)."""
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     csr = (x509.CertificateSigningRequestBuilder()
-           .subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Pump and Plate cloud build")]))
+           .subject_name(x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, common_name)]))
            .sign(key, hashes.SHA256()))
     cert = call("POST", "/certificates", {"data": {"type": "certificates", "attributes": {
         "certificateType": "DISTRIBUTION",
         "csrContent": csr.public_bytes(serialization.Encoding.PEM).decode(),
     }}})["data"]
-    cert_id = cert["id"]
     der = base64.b64decode(cert["attributes"]["certificateContent"])
-    certificate = x509.load_der_x509_certificate(der)
+    return key, x509.load_der_x509_certificate(der), cert["id"]
+
+
+def make_certificate(out_dir, password):
+    key, certificate, cert_id = new_certificate("Pump and Plate cloud build")
+    os.makedirs(out_dir, exist_ok=True)
+    p12 = pkcs12.serialize_key_and_certificates(b"Pump and Plate", key, certificate, None, p12_encryption(password))
+    with open(os.path.join(out_dir, "dist.p12"), "wb") as f:
+        f.write(p12)
+    with open(os.path.join(out_dir, "dist.p12.base64.txt"), "w") as f:
+        f.write(base64.b64encode(p12).decode())
+    print(f"Made certificate {cert_id}, valid until {certificate.not_valid_after_utc:%Y-%m-%d}.")
+
+
+def stored_certificate_id(certificate):
+    """The App Store Connect id of a certificate we already hold."""
+    q = urllib.parse.urlencode({"filter[certificateType]": "DISTRIBUTION", "limit": 200})
+    for item in call("GET", f"/certificates?{q}").get("data", []):
+        der = base64.b64decode(item["attributes"]["certificateContent"])
+        if x509.load_der_x509_certificate(der).serial_number == certificate.serial_number:
+            return item["id"]
+    sys.exit("The stored certificate isn't in App Store Connect any more (revoked or expired). "
+             "Run the Build workflow with 'Make a new signing certificate' and update the secrets.")
+
+
+def setup(bundle_id, out_dir, p12_password, stored_p12=None):
+    bundle_res, team = bundle(bundle_id)
+    os.makedirs(out_dir, exist_ok=True)
+
+    if stored_p12:
+        with open(stored_p12, "rb") as f:
+            _key, certificate, _extra = pkcs12.load_key_and_certificates(f.read(), p12_password.encode())
+        if certificate.not_valid_after_utc < datetime.datetime.now(datetime.timezone.utc):
+            sys.exit("The stored certificate has expired. Make a new one and update the secrets.")
+        cert_id = stored_certificate_id(certificate)
+        shutil.copyfile(stored_p12, os.path.join(out_dir, "dist.p12"))
+        stored = True
+    else:
+        key, certificate, cert_id = new_certificate("Pump and Plate cloud build")
+        with open(os.path.join(out_dir, "dist.p12"), "wb") as f:
+            f.write(pkcs12.serialize_key_and_certificates(b"Pump and Plate", key, certificate, None,
+                                                          p12_encryption(p12_password)))
+        stored = False
 
     name = f"Pump and Plate cloud build {time.strftime('%Y%m%d-%H%M%S')}"
     profile = call("POST", "/profiles", {"data": {
@@ -90,30 +151,22 @@ def setup(bundle_id, out_dir, p12_password):
             "certificates": {"data": [{"type": "certificates", "id": cert_id}]},
         },
     }})["data"]
-
-    os.makedirs(out_dir, exist_ok=True)
-    # The older p12 encryption, which macOS's keychain tool can read.
-    enc = (serialization.PrivateFormat.PKCS12.encryption_builder()
-           .kdf_rounds(2048)
-           .key_cert_algorithm(pkcs12.PBES.PBESv1SHA1And3KeyTripleDESCBC)
-           .hmac_hash(hashes.SHA1())
-           .build(p12_password.encode()))
-    with open(os.path.join(out_dir, "dist.p12"), "wb") as f:
-        f.write(pkcs12.serialize_key_and_certificates(b"Pump and Plate", key, certificate, None, enc))
     with open(os.path.join(out_dir, "profile.mobileprovision"), "wb") as f:
         f.write(base64.b64decode(profile["attributes"]["profileContent"]))
 
     print(f"team={team}")
     print(f"cert_id={cert_id}")
+    print(f"cert_stored={'true' if stored else 'false'}")
     print(f"profile_id={profile['id']}")
     print(f"profile_name={name}")
     print(f"profile_uuid={profile['attributes']['uuid']}")
 
 
-def cleanup(cert_id, profile_id):
-    for path in (f"/profiles/{profile_id}", f"/certificates/{cert_id}"):
-        if path.endswith("/"):
-            continue
+def cleanup(cert_id, profile_id, keep_certificate):
+    paths = [f"/profiles/{profile_id}"]
+    if not keep_certificate:
+        paths.append(f"/certificates/{cert_id}")
+    for path in paths:
         req = urllib.request.Request(API + path, method="DELETE", headers={"Authorization": f"Bearer {token()}"})
         try:
             urllib.request.urlopen(req, timeout=60)
@@ -123,9 +176,12 @@ def cleanup(cert_id, profile_id):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 5 and sys.argv[1] == "setup":
-        setup(sys.argv[2], sys.argv[3], sys.argv[4])
-    elif len(sys.argv) == 4 and sys.argv[1] == "cleanup":
-        cleanup(sys.argv[2], sys.argv[3])
+    a = sys.argv[1:]
+    if len(a) == 3 and a[0] == "make-certificate":
+        make_certificate(a[1], a[2])
+    elif len(a) in (4, 5) and a[0] == "setup":
+        setup(a[1], a[2], a[3], a[4] if len(a) == 5 else None)
+    elif len(a) in (3, 4) and a[0] == "cleanup":
+        cleanup(a[1], a[2], len(a) == 4 and a[3] == "keep-certificate")
     else:
         sys.exit(__doc__)
