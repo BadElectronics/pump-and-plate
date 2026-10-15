@@ -78,6 +78,12 @@ def bundle(bundle_id):
     sys.exit(f"No App ID {bundle_id}. Register it at developer.apple.com → Identifiers.")
 
 
+def expires(certificate):
+    """When a certificate expires, as an aware UTC time (works on older cryptography too)."""
+    utc = getattr(certificate, "not_valid_after_utc", None)
+    return utc or certificate.not_valid_after.replace(tzinfo=datetime.timezone.utc)
+
+
 def p12_encryption(password):
     # The older p12 encryption, which macOS's keychain tool can read.
     return (serialization.PrivateFormat.PKCS12.encryption_builder()
@@ -109,7 +115,7 @@ def make_certificate(out_dir, password):
         f.write(p12)
     with open(os.path.join(out_dir, "dist.p12.base64.txt"), "w") as f:
         f.write(base64.b64encode(p12).decode())
-    print(f"Made certificate {cert_id}, valid until {certificate.not_valid_after_utc:%Y-%m-%d}.")
+    print(f"Made certificate {cert_id}, valid until {expires(certificate):%Y-%m-%d}.")
 
 
 def stored_certificate_id(certificate):
@@ -130,7 +136,7 @@ def setup(bundle_id, out_dir, p12_password, stored_p12=None):
     if stored_p12:
         with open(stored_p12, "rb") as f:
             _key, certificate, _extra = pkcs12.load_key_and_certificates(f.read(), p12_password.encode())
-        if certificate.not_valid_after_utc < datetime.datetime.now(datetime.timezone.utc):
+        if expires(certificate) < datetime.datetime.now(datetime.timezone.utc):
             sys.exit("The stored certificate has expired. Make a new one and update the secrets.")
         cert_id = stored_certificate_id(certificate)
         shutil.copyfile(stored_p12, os.path.join(out_dir, "dist.p12"))
