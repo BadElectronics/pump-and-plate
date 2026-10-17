@@ -154,8 +154,9 @@ jobs:
           cd "$RUNNER_TEMP/logs"
           for name in HIDE_1 HIDE_2; do
             V=$(printf '%s' "${!name}" | tr -d ' \r\n'); export V
-            [ -n "$V" ] && grep -rlF -- "$V" . | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
+            [ -n "$V" ] && { grep -rlF -- "$V" . || true; } | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
           done
+          true
           git init -q
           git config user.name "build"
           git config user.email "build@users.noreply.github.com"
@@ -297,8 +298,9 @@ jobs:
           cd "$RUNNER_TEMP/logs"
           for name in HIDE_1 HIDE_2; do
             V=$(printf '%s' "${!name}" | tr -d ' \r\n'); export V
-            [ -n "$V" ] && grep -rlF -- "$V" . | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
+            [ -n "$V" ] && { grep -rlF -- "$V" . || true; } | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
           done
+          true
           git init -q
           git config user.name "build"
           git config user.email "build@users.noreply.github.com"
@@ -503,8 +505,9 @@ jobs:
           cd "$RUNNER_TEMP/logs"
           for name in HIDE_1 HIDE_2; do
             V=$(printf '%s' "${!name}" | tr -d ' \r\n'); export V
-            [ -n "$V" ] && grep -rlF -- "$V" . | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
+            [ -n "$V" ] && { grep -rlF -- "$V" . || true; } | while read -r f; do perl -pi -e 's/\Q$ENV{V}\E/[hidden]/g' "$f"; done
           done
+          true
           git init -q
           git config user.name "build"
           git config user.email "build@users.noreply.github.com"
