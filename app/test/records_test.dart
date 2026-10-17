@@ -51,9 +51,10 @@ void main() {
     ]);
     expect(s.bestRepsAt('db_bench', lbToKg(45), exceptSession: 'b'), 12);
     expect(s.bestRepsAt('db_bench', lbToKg(40), exceptSession: 'b'), isNull);
-    // Same e1RM either way, which is why the rep record is what celebrates it.
+    // 45 x 18 and 45 x 12 give the same e1RM, which is why the rep record is
+    // what celebrates it.
     expect(s.setE1rm(s.sessions.firstWhere((x) => x.id == 'b').sets.single, DateTime.now()),
-        closeTo(s.bestE1rm('db_bench', exceptSession: 'b')!, 1e-9));
+        closeTo(e1rm(lbToKg(45), 12)!, 1e-9));
   });
 
   test('bodyweight with nothing added matches an empty weight', () async {
