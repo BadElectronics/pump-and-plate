@@ -367,8 +367,26 @@ void main() {
       expect(e1rm(100, 1), 100);
       expect(e1rm(100, 10), closeTo(133.33, 0.01));
       expect(e1rm(lbToKg(190), 8)! / kgPerLb, closeTo(240.67, 0.01));
-      expect(e1rm(100, 11), isNull);
+      // Over 10 reps counts as 10: a safe minimum, never an inflated guess.
+      expect(e1rm(100, 11), closeTo(133.33, 0.01));
+      expect(e1rm(100, 30), closeTo(133.33, 0.01));
       expect(e1rm(0, 5), isNull);
+      expect(e1rm(100, 0), isNull);
+    });
+
+    test('a heavier high-rep set beats a lighter one (100 lb x 19, then 115 lb x 15)', () {
+      final lastWeek = e1rm(lbToKg(100), 19)!;
+      final thisWeek = e1rm(lbToKg(115), 15)!;
+      expect(lastWeek / kgPerLb, closeTo(133.33, 0.01));
+      expect(thisWeek / kgPerLb, closeTo(153.33, 0.01));
+      expect(thisWeek, greaterThan(lastWeek));
+    });
+
+    test('more reps at the same weight past 10 is a rep record, not an e1RM one', () {
+      expect(e1rm(lbToKg(45), 18), closeTo(e1rm(lbToKg(45), 12)!, 1e-9));
+      expect(sameWeight(lbToKg(45), lbToKg(45)), isTrue);
+      expect(sameWeight(null, 0), isTrue);
+      expect(sameWeight(lbToKg(45), lbToKg(50)), isFalse);
     });
 
     test('workout length estimate', () {

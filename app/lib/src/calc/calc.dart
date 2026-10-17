@@ -336,13 +336,20 @@ bool photosDue({
 
 // ---------------------------------------------------------------- strength
 
-/// Estimated one-rep max (Epley). A single counts as its own weight;
-/// sets above 10 reps are too unreliable and return null.
+/// Estimated one-rep max (Epley). A single counts as its own weight.
+/// Sets above 10 reps count as 10: the formula overestimates past that, and
+/// anyone who did 15 reps could certainly have done 10, so the result is a
+/// safe minimum and a heavier weight always moves it up.
 double? e1rm(double loadKg, int reps) {
-  if (reps < 1 || reps > 10 || loadKg <= 0) return null;
+  if (reps < 1 || loadKg <= 0) return null;
   if (reps == 1) return loadKg;
-  return loadKg * (1 + reps / 30);
+  final r = reps > 10 ? 10 : reps;
+  return loadKg * (1 + r / 30);
 }
+
+/// Two logged weights are the same load (both empty or zero counts as
+/// bodyweight only). Allows for kg/lb rounding.
+bool sameWeight(double? a, double? b) => ((a ?? 0) - (b ?? 0)).abs() < 0.05;
 
 /// Rough workout length: about 40 s per set plus the planned rest.
 int estimateMinutes(Iterable<(int sets, int restSec)> items) {

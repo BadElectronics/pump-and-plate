@@ -352,7 +352,7 @@ class _StrengthViewState extends State<StrengthView> {
               const SizedBox(height: 8),
               Text(
                 switch (_metric) {
-                  0 => 'Best set each session (Epley), from sets of 1–10 reps. Warm-ups left out.',
+                  0 => 'Best set each session (Epley). Sets over 10 reps count as 10, so they never inflate it. Warm-ups left out.',
                   1 => 'Heaviest load lifted for a working set each session.',
                   _ => 'Load × reps added up across working sets.',
                 },

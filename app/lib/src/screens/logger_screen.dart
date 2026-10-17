@@ -375,8 +375,9 @@ class _LoggerScreenState extends State<LoggerScreen> {
       _reps[i].text = r == null ? '' : '$r';
     }
 
-    // New estimated 1RM record?
+    // New estimated 1RM record? Otherwise, more reps than ever at this weight?
     if (!updated.warmup) {
+      var shown = false;
       final v = s.setE1rm(updated, x.date);
       final before = s.bestE1rm(set.exerciseId, exceptSession: x.id);
       if (v != null && before != null) {
@@ -389,6 +390,28 @@ class _LoggerScreenState extends State<LoggerScreen> {
         if (v > best + 0.05) {
           _record = 'New e1RM record: ${_fmtWeight(v)} $_unit, up from ${_fmtWeight(before)}';
           _recordExercise = set.exerciseId;
+          shown = true;
+        }
+      }
+      final reps = updated.reps;
+      if (!shown && reps != null && updated.type.countsForRecords && !s.isCardio(set.exerciseId)) {
+        final prior = s.bestRepsAt(set.exerciseId, updated.weightKg, exceptSession: x.id);
+        if (prior != null) {
+          var best = prior;
+          for (var j = 0; j < x.sets.length; j++) {
+            final o = x.sets[j];
+            if (j == i || o.exerciseId != set.exerciseId || !o.done || o.reps == null || !o.type.countsForRecords) continue;
+            if (sameWeight(o.weightKg, updated.weightKg)) best = math.max(best, o.reps!);
+          }
+          if (reps > best) {
+            final bw = s.exercise(set.exerciseId)?.bodyweight ?? false;
+            final w = updated.weightKg;
+            final load = bw
+                ? ((w ?? 0) == 0 ? 'Bodyweight' : 'Bodyweight +${_fmtWeight(w!)} $_unit')
+                : '${_fmtWeight(w ?? 0)} $_unit';
+            _record = 'Rep record: $load × $reps, up from $best';
+            _recordExercise = set.exerciseId;
+          }
         }
       }
     }

@@ -629,6 +629,23 @@ class AppState extends ChangeNotifier {
     return const [];
   }
 
+  /// Most reps done in one working set of [exerciseId] at [weightKg] (the
+  /// added weight for bodyweight exercises), across finished sessions other
+  /// than [exceptSession]. Null when that weight hasn't been done before.
+  int? bestRepsAt(String exerciseId, double? weightKg, {String? exceptSession}) {
+    int? best;
+    for (final x in sessions) {
+      if (!x.finished || x.id == exceptSession) continue;
+      for (final set in x.sets) {
+        if (set.exerciseId != exerciseId || !set.done || !set.type.countsForRecords) continue;
+        final reps = set.reps;
+        if (reps == null || !sameWeight(set.weightKg, weightKg)) continue;
+        if (best == null || reps > best) best = reps;
+      }
+    }
+    return best;
+  }
+
   /// Best estimated 1RM for [exerciseId] across finished sessions other
   /// than [exceptSession].
   double? bestE1rm(String exerciseId, {String? exceptSession}) {
