@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../ai/catalog.dart';
+import '../ai/safety.dart';
 import '../ai/facts.dart';
 import '../ai/log_parser.dart';
 import '../ai/matcher.dart';
@@ -44,6 +45,12 @@ class _AiItem extends _Item {
 class _NoteItem extends _Item {
   _NoteItem(this.text);
   final String text;
+}
+
+/// Crisis resources shown instead of an AI answer (see ai/safety.dart).
+class _SafetyItem extends _Item {
+  _SafetyItem(this.concern);
+  final SafetyConcern concern;
 }
 
 class _RecipeItem extends _Item {
@@ -114,7 +121,7 @@ const _system =
     'use them when asked. '
     "You can't change anything in the app yourself: functions only prepare a card the user checks and "
     "confirms. Never say something is added, planned, logged or saved; say you've prepared it to "
-    "confirm. If there's no function for what's asked, say you can't do that yet. Don't give medical advice.";
+    "confirm. If there's no function for what's asked, say you can't do that yet. Don't give medical advice.$safetyInstruction";
 
 const _tools = [
   AiTool(
@@ -545,6 +552,13 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty || _busy) return;
     _input.clear();
     _add(_UserItem(text));
+    // Suicide, self-harm or eating-disorder messages never reach the model:
+    // people-written crisis resources are shown instead.
+    final concern = checkMessage(text);
+    if (concern != SafetyConcern.none) {
+      _add(_SafetyItem(concern));
+      return;
+    }
     // "plan push day for tomorrow", "add oatmeal for breakfast on friday".
     final plan = _planFromCommand(text);
     if (plan != null) {
@@ -1764,6 +1778,8 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         );
+      case _SafetyItem(:final concern):
+        return _SafetyCard(key: ObjectKey(item), message: crisisMessage(concern));
       case _NoteItem(:final text):
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -2050,6 +2066,62 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+
+/// The crisis resources card. Each button opens the phone's dialer, messages
+/// or browser; nothing is sent anywhere by the app.
+class _SafetyCard extends StatelessWidget {
+  const _SafetyCard({super.key, required this.message});
+
+  final CrisisMessage message;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
+    return Container(
+      key: const ValueKey('safety-card'),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: c.accent.withAlpha(128)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(message.title, style: AppText.body(c).copyWith(fontSize: 17, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          Text(message.body, style: AppText.body(c).copyWith(fontSize: 15, height: 1.4)),
+          const SizedBox(height: 6),
+          for (final contact in message.contacts)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (contact.url != null)
+                    TextButton(
+                      onPressed: () => Phone.openUrl(contact.url!),
+                      style: TextButton.styleFrom(
+                        foregroundColor: c.accent,
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 36),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        alignment: Alignment.centerLeft,
+                      ),
+                      child: Text(contact.label, style: AppText.body(c).copyWith(color: c.accent, fontWeight: FontWeight.w600)),
+                    )
+                  else
+                    Text(contact.label, style: AppText.body(c).copyWith(fontWeight: FontWeight.w600)),
+                  Text(contact.detail, style: AppText.quiet(c).copyWith(fontSize: 13)),
+                ],
+              ),
+            ),
         ],
       ),
     );
