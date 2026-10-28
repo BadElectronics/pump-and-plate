@@ -15,7 +15,8 @@
 # Releasing: put the version to ship in store/release.txt (say 1.5.20) and
 # push. When it matches the version in app/lib/src/config.dart and no
 # v1.5.20 tag exists yet, that push is a release: the Android build goes to
-# Google Play Production, the iPhone build goes to TestFlight, and the build
+# Google Play Production, the iPhone build goes to TestFlight and on to App
+# Store review (live on approval), and the build
 # then tags the commit v1.5.20 so the same version is never shipped twice.
 # Pushing a v* tag by hand works too.
 name: Build
@@ -514,6 +515,35 @@ jobs:
           git add -A
           git commit -qm "Logs from run ${{ github.run_id }}, ${{ github.job }}"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" HEAD:refs/heads/ci-logs-${{ github.job }}
+
+  # On a release, sends the iPhone build that just went to TestFlight on to
+  # App Store review: waits for Apple to process it, makes the new version
+  # with the What's New text from store/whatsnew, attaches the build and
+  # submits. It goes live automatically once Apple approves it.
+  app-store:
+    name: Submit to App Store review
+    needs: [release, ios]
+    if: needs.release.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet --upgrade pyjwt cryptography
+      - name: Submit for review
+        env:
+          ISSUER: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$KEY_P8" | tr -d '\r' > "$RUNNER_TEMP/AuthKey.p8"
+          APP_STORE_CONNECT_ISSUER_ID=$(printf '%s' "$ISSUER" | tr -d ' \r\n') \
+          APP_STORE_CONNECT_KEY_ID=$(printf '%s' "$KEY_ID" | tr -d ' \r\n') \
+          APP_STORE_CONNECT_KEY_PATH="$RUNNER_TEMP/AuthKey.p8" \
+            python3 scripts/app-store-submit.py com.pumpandplate.app \
+              "${{ needs.release.outputs.version }}" "$((1000 + ${{ github.run_number }}))" \
+              store/whatsnew/whatsnew-en-US
+          rm -f "$RUNNER_TEMP/AuthKey.p8"
 
   # Checks the Google Play upload robot can reach the app. Read-only: it
   # opens a draft and throws it away, so nothing on Google Play changes.
