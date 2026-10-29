@@ -78,6 +78,8 @@ def page(name, values, wrapped=True):
   <div class="links">
     <a href="privacy.html">Privacy policy</a>
     <a href="support.html">Support</a>
+    <a href="https://play.google.com/store/apps/details?id=com.pumpandplate.app">Google Play</a>
+    <a href="https://apps.apple.com/app/id6822553518">App Store</a>
     <a href="{{{{GITHUB}}}}">Source code</a>
   </div>
   <p>{footer_owner}. Pump and Plate is free software under the GNU GPL v3. This site uses no cookies and no trackers.</p>

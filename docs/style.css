@@ -129,6 +129,8 @@ p { margin: 0 0 1rem; max-width: 65ch; }
   margin: 0;
 }
 .lede { font-size: var(--step-1); color: var(--iron); margin: 0; }
+.live { font-weight: 600; color: var(--iron); margin: 0; }
+.live::before { content: ""; display: inline-block; width: 0.55em; height: 0.55em; margin-right: 0.5em; border-radius: 50%; background: var(--red-fill); vertical-align: 0.08em; }
 .stores { display: flex; flex-wrap: wrap; gap: 10px; }
 .store {
   display: inline-flex;
