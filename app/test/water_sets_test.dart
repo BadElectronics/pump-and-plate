@@ -97,7 +97,7 @@ void main() {
       await tester.pump(const Duration(seconds: 5));
     });
 
-    testWidgets('Home: Undo takes back a tap, holding removes the latest drink', (tester) async {
+    testWidgets('Home: Undo next to the total takes back a tap, holding removes the latest drink', (tester) async {
       await tester.pumpWidget(FitApp(
         store: MemoryStore(const StoredData(settings: AppSettings(onboarded: true, nicknameAsked: true, tourSeen: true))),
         reminders: NoopReminders(),
@@ -105,29 +105,34 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
       final button = find.byKey(const ValueKey('home-water'));
+      final undo = find.byKey(const ValueKey('home-water-undo'));
 
-      // Tap, then Undo.
+      // Tap, then Undo beside the total.
       await tester.tap(button);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 750)); // the bar slides in
-      expect(find.text('Added 1 cup.'), findsOneWidget);
-      await tester.tap(find.text('Undo'));
+      expect(undo, findsOneWidget);
+      await tester.tap(undo);
       await tester.pump();
       expect(find.text('0 cups of 8 cups'), findsOneWidget);
-      await tester.pump(const Duration(seconds: 5));
+      expect(undo, findsNothing);
 
-      // Two taps, then hold: one comes off.
+      // Quick taps all land on the button, nothing covers it.
       await tester.tap(button);
       await tester.pump();
       await tester.tap(button);
       await tester.pump();
       expect(find.text('2 cups of 8 cups'), findsOneWidget);
+      // Undo goes away by itself.
+      await tester.pump(const Duration(seconds: 5));
+      expect(undo, findsNothing);
+
+      // Hold: the latest drink comes off.
       await tester.longPress(button);
       await tester.pump();
       expect(find.text('1 cup of 8 cups'), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 750));
-      expect(find.text('Removed 1 cup.'), findsOneWidget);
-      await tester.pump(const Duration(seconds: 5));
+      expect(find.textContaining('Removed 1 cup'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 4));
+      expect(find.textContaining('Removed 1 cup'), findsNothing);
 
       // Holding with nothing logged changes nothing.
       await tester.longPress(button);
@@ -135,9 +140,8 @@ void main() {
       await tester.longPress(button);
       await tester.pump();
       expect(find.text('0 cups of 8 cups'), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 750));
-      expect(find.text('No water logged today.'), findsOneWidget);
-      await tester.pump(const Duration(seconds: 5));
+      expect(find.textContaining('Nothing logged today'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 4));
     });
 
     test('the latest drink of the day is the one taken back', () async {

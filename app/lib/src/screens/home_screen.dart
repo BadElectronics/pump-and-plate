@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -164,13 +166,39 @@ class _CheckRowsState extends State<_CheckRows> {
   bool _editWeight = false;
   bool _editSleep = false;
 
+  /// The drink just added on Home, while its Undo shows next to the total.
+  WaterEntry? _justAdded;
+
+  /// A short note next to the total after holding the button ("Removed 1 cup").
+  String? _waterNote;
+  Timer? _waterTimer;
+
   static const _qualityWords = ['', 'poor', 'fair', 'okay', 'good', 'great'];
 
   @override
   void dispose() {
     _weight.dispose();
     _hours.dispose();
+    _waterTimer?.cancel();
     super.dispose();
+  }
+
+  /// Shows Undo (or a note) next to the water total for a few seconds. It
+  /// sits beside the total, never over the button, so quick taps still add.
+  void _flashWater({WaterEntry? added, String? note}) {
+    _waterTimer?.cancel();
+    setState(() {
+      _justAdded = added;
+      _waterNote = note;
+    });
+    _waterTimer = Timer(Duration(seconds: added != null ? 4 : 3), () {
+      if (mounted) {
+        setState(() {
+          _justAdded = null;
+          _waterNote = null;
+        });
+      }
+    });
   }
 
   DateTime get _today => dateOnly(DateTime.now());
@@ -384,9 +412,40 @@ class _CheckRowsState extends State<_CheckRows> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${formatWater(drank, imperial: imperialWater)} of ${formatWater(waterGoal, imperial: imperialWater)}',
-                style: AppText.body(c).copyWith(fontWeight: FontWeight.w600, fontSize: 14),
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      '${formatWater(drank, imperial: imperialWater)} of ${formatWater(waterGoal, imperial: imperialWater)}',
+                      style: AppText.body(c).copyWith(fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                  ),
+                  if (_justAdded != null) ...[
+                    Text('  ·  ', style: AppText.quiet(c).copyWith(fontSize: 14)),
+                    GestureDetector(
+                      key: const ValueKey('home-water-undo'),
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        final e = _justAdded;
+                        if (e == null) return;
+                        HapticFeedback.lightImpact();
+                        s.removeWater(e);
+                        _waterTimer?.cancel();
+                        setState(() => _justAdded = null);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Text(
+                          'Undo',
+                          style: AppText.body(c).copyWith(fontSize: 14, fontWeight: FontWeight.w600, color: c.accent),
+                        ),
+                      ),
+                    ),
+                  ] else if (_waterNote != null)
+                    Flexible(
+                      child: Text('  ·  $_waterNote', style: AppText.quiet(c).copyWith(fontSize: 13), overflow: TextOverflow.ellipsis),
+                    ),
+                ],
               ),
               const SizedBox(height: 6),
               ClipRRect(
@@ -408,30 +467,19 @@ class _CheckRowsState extends State<_CheckRows> {
           onTap: () {
             HapticFeedback.lightImpact();
             final added = s.addWater(waterStepMl(imperial: imperialWater));
-            if (added == null) return;
-            // A mis-tap is easy to take back right away.
-            showUndo(
-              context,
-              'Added ${formatWater(added.ml, imperial: imperialWater)}.',
-              () => s.removeWater(added),
-              seconds: 4,
-            );
+            // A mis-tap is easy to take back: Undo shows next to the total.
+            if (added != null) _flashWater(added: added);
           },
           // Holding takes back the most recent drink today.
           onLongPress: () {
             final last = s.lastWaterOn(DateTime.now());
-            final messenger = ScaffoldMessenger.of(context);
-            messenger.hideCurrentSnackBar();
             if (last == null) {
-              messenger.showSnackBar(const SnackBar(content: Text('No water logged today.')));
+              _flashWater(note: 'Nothing logged today');
               return;
             }
             HapticFeedback.mediumImpact();
             s.removeWater(last);
-            messenger.showSnackBar(SnackBar(
-              content: Text('Removed ${formatWater(last.ml, imperial: imperialWater)}.'),
-              duration: const Duration(seconds: 3),
-            ));
+            _flashWater(note: 'Removed ${formatWater(last.ml, imperial: imperialWater)}');
           },
         ),
       ],
