@@ -2357,13 +2357,25 @@ class AppState extends ChangeNotifier {
 
   double waterOn(DateTime day) => waterEntriesOn(day).fold(0.0, (t, w) => t + w.ml);
 
-  void addWater(double ml, {DateTime? day}) {
-    if (ml <= 0) return;
+  /// Logs a drink and returns it (null when [ml] isn't positive), so it can
+  /// be undone.
+  WaterEntry? addWater(double ml, {DateTime? day}) {
+    if (ml <= 0) return null;
     final now = DateTime.now();
     final e = WaterEntry(id: newId('wa'), date: dateOnly(day ?? now), ml: ml, at: now);
     water = [...water, e];
     notifyListeners();
     _save(() => _store.saveWater(e));
+    return e;
+  }
+
+  /// The drink logged most recently for [day], or null if there's none.
+  WaterEntry? lastWaterOn(DateTime day) {
+    WaterEntry? last;
+    for (final w in waterEntriesOn(day)) {
+      if (last == null || !w.at.isBefore(last.at)) last = w;
+    }
+    return last;
   }
 
   void removeWater(WaterEntry e) {

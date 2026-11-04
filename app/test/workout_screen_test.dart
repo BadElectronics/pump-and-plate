@@ -81,6 +81,41 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
   });
 
+  testWidgets('after a workout, the target is your heaviest set last time, not the plan', (tester) async {
+    tester.view.physicalSize = const Size(900, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    final day = dateOnly(DateTime.now()).subtract(const Duration(days: 3));
+    final last = Session(
+      id: 's0',
+      date: day,
+      name: 'Push',
+      workoutId: 'w1',
+      startedAt: day,
+      endedAt: day.add(const Duration(hours: 1)),
+      sets: const [
+        SetEntry(exerciseId: 'bench_press', weightKg: 60, reps: 8, done: true, type: SetType.warmup),
+        SetEntry(exerciseId: 'bench_press', weightKg: 110, reps: 8, done: true),
+        SetEntry(exerciseId: 'bench_press', weightKg: 107.5, reps: 8, done: true),
+      ],
+    );
+    final now = _live();
+    final store = MemoryStore(StoredData(
+      settings: const AppSettings(onboarded: true, nicknameAsked: true, tourSeen: true, units: Units.metric),
+      workouts: const [_plan],
+      sessions: [last, now],
+    ));
+    await tester.pumpWidget(FitApp(store: store, reminders: NoopReminders()));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    tester.state<NavigatorState>(find.byType(Navigator).first).push(LoggerScreen.route(now.id));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    // The plan still says 100 kg; last time's heaviest working set was 110.
+    expect(find.text('Target 110 kg × 6–10 reps (last time)'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+  });
+
   testWidgets('rest taken after a set shows small, during the workout', (tester) async {
     await _open(
       tester,

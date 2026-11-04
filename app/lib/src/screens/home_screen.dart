@@ -407,7 +407,31 @@ class _CheckRowsState extends State<_CheckRows> {
           label: imperialWater ? '+1 cup' : '+250 ml',
           onTap: () {
             HapticFeedback.lightImpact();
-            s.addWater(waterStepMl(imperial: imperialWater));
+            final added = s.addWater(waterStepMl(imperial: imperialWater));
+            if (added == null) return;
+            // A mis-tap is easy to take back right away.
+            showUndo(
+              context,
+              'Added ${formatWater(added.ml, imperial: imperialWater)}.',
+              () => s.removeWater(added),
+              seconds: 4,
+            );
+          },
+          // Holding takes back the most recent drink today.
+          onLongPress: () {
+            final last = s.lastWaterOn(DateTime.now());
+            final messenger = ScaffoldMessenger.of(context);
+            messenger.hideCurrentSnackBar();
+            if (last == null) {
+              messenger.showSnackBar(const SnackBar(content: Text('No water logged today.')));
+              return;
+            }
+            HapticFeedback.mediumImpact();
+            s.removeWater(last);
+            messenger.showSnackBar(SnackBar(
+              content: Text('Removed ${formatWater(last.ml, imperial: imperialWater)}.'),
+              duration: const Duration(seconds: 3),
+            ));
           },
         ),
       ],

@@ -335,11 +335,15 @@ class SmallButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.onTap,
+    this.onLongPress,
     this.quiet = false,
   });
 
   final String label;
   final VoidCallback onTap;
+
+  /// Optional: what holding the button does.
+  final VoidCallback? onLongPress;
   final bool quiet;
 
   @override
@@ -349,6 +353,7 @@ class SmallButton extends StatelessWidget {
       button: true,
       child: GestureDetector(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Container(
           height: 48,
           padding: const EdgeInsets.symmetric(horizontal: 18),

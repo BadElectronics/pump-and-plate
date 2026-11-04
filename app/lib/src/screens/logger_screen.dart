@@ -1201,15 +1201,16 @@ class _LoggerScreenState extends State<LoggerScreen> {
     final pending = rows.any((r) => typedNotLogged(x.sets[r.$1]));
     String clock(int sec) => '${sec ~/ 60}:${(sec % 60).toString().padLeft(2, '0')}';
 
-    // The target, always on show: the plan's weight (else your top set last
-    // time) and rep range, and the rest target (tap to change).
+    // The target, always on show: your heaviest working set last time (the
+    // plan's weight only the first time, so it follows your progress), the
+    // plan's rep range, and the rest target (tap to change).
     final plan = _planItem(s, x, exerciseId);
     double? lastTop;
     for (final e in prev) {
       final w = e.weightKg;
       if (w != null && w > 0 && (lastTop == null || w > lastTop)) lastTop = w;
     }
-    final targetKg = plan?.loadKg ?? lastTop;
+    final targetKg = lastTop ?? plan?.loadKg;
     final targetParts = <String>[
       if (targetKg != null) bodyweight ? '+${_fmtWeight(targetKg)} $_unit' : '${_fmtWeight(targetKg)} $_unit',
       if (plan != null) '${plan.repsLow == plan.repsHigh ? plan.repsLow : '${plan.repsLow}–${plan.repsHigh}'} reps',
@@ -1252,7 +1253,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
                         children: [
                           if (targetParts.isNotEmpty)
                             Text(
-                              'Target ${targetParts.join(' × ')}${plan?.loadKg == null && targetKg != null ? ' (last time)' : ''}',
+                              'Target ${targetParts.join(' × ')}${lastTop != null ? ' (last time)' : ''}',
                               key: ValueKey('target-$exerciseId'),
                               style: AppText.body(c).copyWith(fontSize: 13, fontWeight: FontWeight.w500),
                             ),
