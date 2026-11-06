@@ -1,0 +1,438 @@
+flutter_gemma: Downloading litertlm native libs from https://github.com/DenisovAV/flutter_gemma/releases/download/native-v0.17.1-a/litertlm-linux_x86_64.tar.gz ...
+
+flutter_gemma: Checksum verified (litertlm-linux_x86_64.tar.gz)
+
+flutter_gemma: litertlm libs cached to /home/runner/.cache/flutter_gemma/native/linux_x86_64
+
+00:00 +0: loading /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart
+00:00 +0: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: schedule, move and remove a planned workout
+00:00 +1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: schedule, move and remove a planned workout
+00:00 +2: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: starter foods load and logging adds up the day
+00:00 +3: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: copy last week skips workouts already planned
+00:00 +4: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: recipes: totals, per serving, logging and editing amounts
+00:00 +5: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: a finished session marks the planned workout done
+00:00 +6: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: copy the day before, and delete
+00:00 +7: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: editing keeps ticked sets and deletes empty workouts
+00:00 +8: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: stores and prices; removing a store removes its prices
+00:00 +9: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: deleting a workout clears its future calendar slots
+00:00 +10: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: food data survives a backup
+00:00 +11: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_test.dart: food data survives a backup
+00:00 +12: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: past weigh-ins can be added, changed and deleted
+00:00 +13: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: superset spans group linked exercises
+00:00 +14: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: cardio: starter exercises, one interval, notes and minutes
+00:00 +15: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calendar_test.dart: new fields survive storage round-trips
+00:00 +16: /home/runner/work/pump-and-plate/pump-and-plate/app/test/week_start_test.dart: the week starts on Sunday or Monday
+00:00 +17: /home/runner/work/pump-and-plate/pump-and-plate/app/test/week_start_test.dart: Sunday is the default, and the choice is saved
+00:00 +18: /home/runner/work/pump-and-plate/pump-and-plate/app/test/week_start_test.dart: last week follows the setting
+00:00 +19: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: check digits catch misreads
+00:00 +20: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: UPC-E expands to UPC-A, and the same product matches in every form
+00:00 +21: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: reads an Open Food Facts product, filling calories from kilojoules
+00:00 +22: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: a scanned UPC finds the food saved under its EAN form
+00:00 +23: /home/runner/work/pump-and-plate/pump-and-plate/app/test/barcode_test.dart: barcode, brand and serving survive saving, backups and food shares
+00:01 +24: /home/runner/work/pump-and-plate/pump-and-plate/app/test/share_test.dart: a share carries recipes, their foods and extra foods, without prices
+00:01 +25: /home/runner/work/pump-and-plate/pump-and-plate/app/test/share_test.dart: importing reuses foods by name and skips recipes you already have
+00:01 +26: /home/runner/work/pump-and-plate/pump-and-plate/app/test/share_test.dart: friendly errors for the wrong kind of file
+00:01 +27: /home/runner/work/pump-and-plate/pump-and-plate/app/test/tips_test.dart: the store is not started until the tip jar asks for tips
+00:02 +28: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: names sort oldest to newest
+00:02 +29: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: due daily or weekly, by calendar day
+00:02 +30: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: clean-up keeps the newest and never touches other files
+00:02 +31: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: a due backup is written, old ones pruned, the result recorded
+00:02 +32: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: nothing happens when off or not due, unless asked
+00:02 +33: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: a missing folder is reported plainly
+00:02 +34: /home/runner/work/pump-and-plate/pump-and-plate/app/test/auto_backup_test.dart: backup settings survive saving
+00:05 +35: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: warm-up sets a ramp of 40, 60 and 80 percent, rounded to loadable weights
+00:05 +36: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: set types saved and read back, and old warm-ups still read as warm-ups
+00:05 +37: /home/runner/work/pump-and-plate/pump-and-plate/app/test/meso_test.dart: weeks, deload and the calendar
+00:05 +38: /home/runner/work/pump-and-plate/pump-and-plate/app/test/meso_test.dart: weeks, deload and the calendar
+00:05 +39: /home/runner/work/pump-and-plate/pump-and-plate/app/test/meso_test.dart: weeks, deload and the calendar
+00:05 +40: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water added, removed, totalled, saved and backed up
+00:05 +41: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water added, removed, totalled, saved and backed up
+00:05 +42: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water added, removed, totalled, saved and backed up
+00:05 +43: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water added, removed, totalled, saved and backed up
+00:05 +44: /home/runner/work/pump-and-plate/pump-and-plate/app/test/meso_test.dart: mesocycles survive a backup
+00:05 +45: /home/runner/work/pump-and-plate/pump-and-plate/app/test/meso_test.dart: mesocycles survive a backup
+00:05 +46: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water +1 cup on Home
+00:05 +47: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water +1 cup on Home
+00:06 +48: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water +1 cup on Home
+00:06 +49: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water +1 cup on Home
+00:06 +50: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water +1 cup on Home
+00:07 +51: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water Home: Undo next to the total takes back a tap, holding removes the latest drink
+00:07 +52: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water Home: Undo next to the total takes back a tap, holding removes the latest drink
+00:07 +53: /home/runner/work/pump-and-plate/pump-and-plate/app/test/water_sets_test.dart: water Home: Undo next to the total takes back a tap, holding removes the latest drink
+00:07 +54: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:07 +55: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:07 +56: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:08 +57: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:08 +58: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:08 +59: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: a typed plan becomes a card, and planning it confirms
+00:09 +60: /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart: the app goes dark during the set hours
+00:09 +61: /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart: the app goes dark during the set hours
+00:09 +62: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals "plan a meal for tomorrow" opens an empty card to add foods
+00:09 +63: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals "plan a meal for tomorrow" opens an empty card to add foods
+00:09 +64: /home/runner/work/pump-and-plate/pump-and-plate/app/test/dark_hours_test.dart: a dark main theme still turns light when dark hours end
+00:10 +65: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI sends foods as objects: still a card with the food
+00:10 +66: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI leaves the foods out: taken from what was typed
+00:10 +67: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI leaves the foods out: taken from what was typed
+00:10 +68: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI leaves the foods out: taken from what was typed
+00:10 +69: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI leaves the foods out: taken from what was typed
+00:10 +70: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI leaves the foods out: taken from what was typed
+00:10 +71: /home/runner/work/pump-and-plate/pump-and-plate/app/test/plan_test.dart: planning meals the AI leaves the foods out: taken from what was typed
+00:10 +72: loading /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart
+00:11 +72: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export CSV cells quote only when needed
+00:11 +73: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export CRC-32 matches the standard check value
+00:11 +74: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export zip has the right structure
+00:11 +75: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: export spreadsheets cover every log
+00:11 +76: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: PIN hashing is salted and checkable
+00:11 +77: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: an active phase sets goal mode and pace
+00:11 +78: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: messages go to the right part of the app
+00:11 +79: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: messages go to the right part of the app
+00:11 +80: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: widget data shows today's weight and workout
+00:11 +81: /home/runner/work/pump-and-plate/pump-and-plate/app/test/insights_test.dart: widget data shows today's weight and workout
+00:11 +82: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +83: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +84: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +85: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +86: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +87: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +88: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +89: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +90: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +91: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +92: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +93: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +94: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +95: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +96: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +97: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +98: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +99: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:12 +100: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:13 +101: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:13 +102: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:13 +103: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:13 +104: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: start a workout: a card, then the workout opens
+00:13 +105: /home/runner/work/pump-and-plate/pump-and-plate/app/test/muscles_test.dart: the Overview card shows trained muscles and opens the heatmap
+00:14 +106: /home/runner/work/pump-and-plate/pump-and-plate/app/test/muscles_test.dart: the Overview card shows trained muscles and opens the heatmap
+00:14 +107: /home/runner/work/pump-and-plate/pump-and-plate/app/test/muscles_test.dart: the Overview card shows trained muscles and opens the heatmap
+00:14 +108: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:14 +109: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:14 +110: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:14 +111: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:14 +112: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:14 +113: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:14 +114: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:14 +115: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: change the goal, then undo
+00:15 +116: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +117: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +118: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +119: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +120: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +121: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +122: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +123: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +124: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +125: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +126: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +127: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +128: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +129: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +130: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +131: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +132: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +133: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +134: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +135: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +136: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: fix a logged set
+00:15 +137: /home/runner/work/pump-and-plate/pump-and-plate/app/test/calc_test.dart: backup round-trips everything
+00:15 +138: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +139: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +140: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +141: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +142: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +143: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +144: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +145: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +146: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +147: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +148: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +149: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:15 +150: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_actions_test.dart: delete a night's sleep, then undo
+00:16 +151: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "I want to kill myself"
+00:16 +152: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "thinking about suicide lately"
+00:16 +153: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "I'm suicidal"
+00:16 +154: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "I've been self-harming again"
+00:16 +155: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "I don't want to live anymore"
+00:16 +156: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "i wanna die"
+00:16 +157: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "sometimes I wish I was dead"
+00:16 +158: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check self-harm: "how many pills to overdose on"
+00:16 +159: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check eating: "I make myself throw up after dinner"
+00:16 +160: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check eating: "how do I purge after a binge"
+00:16 +161: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check eating: "I'm starving myself to lose weight"
+00:16 +162: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check eating: "should I take laxatives"
+00:16 +163: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check eating: "plan me 500 calories a day"
+00:16 +164: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check eating: "I want to eat 600 kcal per day"
+00:16 +165: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "leg day killed me"
+00:16 +166: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "this set is going to kill me"
+00:16 +167: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "I'm dying after that workout"
+00:16 +168: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "killing it today"
+00:16 +169: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "did suicide sprints at practice"
+00:16 +170: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "we ran suicides"
+00:16 +171: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "I hurt my shoulder"
+00:16 +172: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "I'm in a cutting phase"
+00:16 +173: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "eat 1,500 calories a day"
+00:16 +174: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "eat 2000 calories a day"
+00:16 +175: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "ran 5 kms"
+00:16 +176: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "300 calories for breakfast"
+00:16 +177: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "deadlift 315 for 3"
+00:16 +178: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "starving after the gym"
+00:16 +179: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "I hurt myself deadlifting"
+00:16 +180: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check left alone: "log 2 eggs for breakfast"
+00:16 +181: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the check curly apostrophes are read too
+00:16 +182: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the messages self-harm lists 988 by call and text, and somewhere outside North America
+00:16 +183: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the messages eating lists the National Alliance for Eating Disorders, not NEDA
+00:16 +184: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: the messages the model is told the same thing as a backstop
+00:16 +185: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: a self-harm message never reaches the model and shows 988
+00:18 +186: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Chat warns that the AI is experimental until told not to
+00:18 +187: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Chat warns that the AI is experimental until told not to
+00:18 +188: /home/runner/work/pump-and-plate/pump-and-plate/app/test/safety_test.dart: ordinary gym talk still goes to the model, with the safety instruction
+00:18 +189: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: Put AI away frees the model and says so
+00:19 +190: /home/runner/work/pump-and-plate/pump-and-plate/app/test/put_away_test.dart: if the engine is stuck, it offers to restart the app
+00:19 +191: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: the bundled foods load, accents and all
+00:19 +192: /home/runner/work/pump-and-plate/pump-and-plate/app/test/food_db_test.dart: a search puts the plain, everyday food first
+00:20 +193: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: opens on Home with the pie, the greeting and the check-ins
+00:21 +194: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: opens on Home with the pie, the greeting and the check-ins
+00:21 +195: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: opens on Home with the pie, the greeting and the check-ins
+00:21 +196: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: a slice opens its section, and Home folds it back
+00:21 +197: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted workout into a draft and saves it
+00:21 +198: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted workout into a draft and saves it
+00:21 +199: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted workout into a draft and saves it
+00:21 +200: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted workout into a draft and saves it
+00:21 +201: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted workout into a draft and saves it
+00:21 +202: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Chat turns a pasted workout into a draft and saves it
+00:22 +203: /home/runner/work/pump-and-plate/pump-and-plate/app/test/projection_test.dart: the calendar explains projected weights with a legend
+00:22 +204: /home/runner/work/pump-and-plate/pump-and-plate/app/test/projection_test.dart: the calendar explains projected weights with a legend
+00:22 +205: /home/runner/work/pump-and-plate/pump-and-plate/app/test/projection_test.dart: the calendar explains projected weights with a legend
+00:23 +206: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Settings switches themes, including Emerald, and units
+00:23 +207: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Home weigh-in saves a weight
+00:23 +208: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Home sleep asks how you slept after the hours
+00:23 +209: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: first run shows setup, and Skip goes to Home
+00:24 +210: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Log opens with weight, sleep and the rest, due items first
+00:24 +211: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Progress switches to Sleep and Photos
+00:24 +212: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Progress switches to Sleep and Photos
+00:24 +212: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a failed save is kept, warned about, and written by Try again
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+Saving again failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+00:24 +213: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Progress switches to Sleep and Photos
+00:24 +213: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a deletion made while full is replayed before re-saving
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+00:24 +214: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Progress switches to Sleep and Photos
+00:24 +215: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a full phone shows a warning, and Try again saves
+00:24 +216: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a full phone shows a warning, and Try again saves
+00:25 +217: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a full phone shows a warning, and Try again saves
+00:25 +218: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a full phone shows a warning, and Try again saves
+Saving failed: Exception: DatabaseException(database or disk is full (code 13 SQLITE_FULL))
+00:25 +219: /home/runner/work/pump-and-plate/pump-and-plate/app/test/save_problem_test.dart: a full phone shows a warning, and Try again saves
+00:25 +220: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: a workout from the tray can be tapped onto a day
+00:26 +221: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: Food opens on Groceries with the guide and your own lists
+00:26 +222: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: doses: amounts as you take them, history kept when removed
+00:26 +223: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: the custom checklist adds an item
+00:26 +224: /home/runner/work/pump-and-plate/pump-and-plate/app/test/widget_test.dart: the custom checklist adds an item
+00:26 +225: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:27 +226: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:27 +227: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:27 +228: /home/runner/work/pump-and-plate/pump-and-plate/app/test/supplements_test.dart: add one and tick it off
+00:28 +229: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:28 +230: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:28 +231: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +232: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +233: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +234: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +235: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +236: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +237: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +238: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +239: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +240: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:29 +241: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:30 +242: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:30 +243: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:30 +244: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_screen_test.dart: Add warm-up adds one warm-up set, before the working sets
+00:30 +245: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:30 +246: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:31 +247: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:31 +248: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:31 +249: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:31 +250: /home/runner/work/pump-and-plate/pump-and-plate/app/test/paste_workout_test.dart: pasted in Chat: matched, Zercher Squat created, saved with everything
+00:32 +251: /home/runner/work/pump-and-plate/pump-and-plate/app/test/home_test.dart: greeting: no comma before the name, ordinal dates, time of day
+00:32 +252: loading /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart
+00:33 +252: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: reading typed logs weight
+00:33 +253: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: reading typed logs sleep
+00:33 +254: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: reading typed logs food
+00:33 +255: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: reading typed logs not logs
+00:33 +256: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: facts and coaching weight facts use the averages and changes
+00:33 +257: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: facts and coaching short sleep is found, and stale weigh-ins
+00:33 +258: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: facts and coaching questions pick the facts they need
+00:33 +259: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: Chat without a model a typed weigh-in is checked, then saved
+00:35 +260: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: make_recipe: shows a card and changes nothing on its own
+00:35 +261: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: Chat without a model a typed breakfast is matched to foods, then saved
+00:35 +262: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: make_workout: shows a card and changes nothing on its own
+00:35 +263: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_logging_test.dart: Chat without a model a question shows the facts from your data
+00:35 +264: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: log_food: shows a card and changes nothing on its own
+00:35 +265: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: log_food: shows a card and changes nothing on its own
+00:35 +266: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: log_weight: shows a card and changes nothing on its own
+00:36 +267: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: log_sleep: shows a card and changes nothing on its own
+00:36 +268: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: log_water: shows a card and changes nothing on its own
+00:37 +269: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model stuck repeating a token is stopped and explained
+00:37 +270: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model stuck repeating a token is stopped and explained
+00:37 +271: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model stuck repeating a token is stopped and explained
+00:37 +272: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model stuck repeating a token is stopped and explained
+00:38 +273: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model stuck repeating a token is stopped and explained
+00:38 +274: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model stuck repeating a token is stopped and explained
+00:38 +275: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_exercise_in_workout: shows a card and changes nothing on its own
+00:38 +276: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model looping on its thinking label in varied words is stopped
+00:38 +277: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a model looping on its thinking label in varied words is stopped
+00:39 +278: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: move_food: shows a card and changes nothing on its own
+00:39 +279: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: a short answer that repeats a word is not mistaken for a loop
+00:39 +280: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: delete_food: shows a card and changes nothing on its own
+00:39 +281: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: stray control tokens are hidden from a normal answer
+00:39 +282: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: stray control tokens are hidden from a normal answer
+00:39 +283: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: add_groceries: shows a card and changes nothing on its own
+00:39 +284: /home/runner/work/pump-and-plate/pump-and-plate/app/test/chat_stuck_test.dart: an ordinary long answer is left alone
+00:40 +285: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_goal: shows a card and changes nothing on its own
+00:40 +286: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_protein_target: shows a card and changes nothing on its own
+00:40 +287: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_units: shows a card and changes nothing on its own
+00:40 +288: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_theme: shows a card and changes nothing on its own
+00:40 +289: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +290: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +291: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +292: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +293: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +294: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +295: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +296: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: set_reminder: shows a card and changes nothing on its own
+00:40 +297: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:40 +298: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:41 +299: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:41 +300: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:41 +301: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:41 +302: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:41 +303: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:41 +304: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded opens on Progress, with the wheel on the right
+00:42 +305: /home/runner/work/pump-and-plate/pump-and-plate/app/test/ai_never_writes_test.dart: change_set: shows a card and changes nothing on its own
+00:42 +306: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded a tab open on the folded phone stays open when it unfolds
+
+Warning: A call to tap() with finder "Found 1 widget with text "Food" descending from widget with type "PieMenu": [
+  Text("Food", inherit: true, color: Color(alpha: 1.0000, red: 0.1216, green: 0.1098, blue: 0.0902, colorSpace: ColorSpace.sRGB), size: 13.0, weight: 600, maxLines: 1, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(175.9, 417.3)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#8a5da relayoutBoundary=up1
+The hit test result at that offset is: HitTestResult(RenderPointerListener#72591@Offset(106.9, 267.3), RenderSemanticsGestureHandler#59317@Offset(106.9, 267.3), RenderCustomPaint#ed00e@Offset(106.9, 267.3), RenderStack#92512@Offset(106.9, 267.3), RenderOpacity#e2f40@Offset(106.9, 267.3), RenderConstrainedBox#61789@Offset(106.9, 267.3), RenderPositionedBox#5cee1@Offset(159.9, 267.3), _RenderLayoutBuilder#fd495@Offset(159.9, 267.3), RenderFlex#f46ee@Offset(159.9, 397.3), RenderPadding#a2cad@Offset(175.9, 417.3), RenderPadding#f1090@Offset(175.9, 417.3), RenderIgnorePointer#a4a03@Offset(175.9, 417.3), RenderOffstage#19d2e@Offset(175.9, 417.3), RenderStack#fb8c3@Offset(175.9, 417.3), RenderCustomMultiChildLayoutBox#ce5cf@Offset(175.9, 417.3), _RenderInkFeatures#1975e@Offset(175.9, 417.3), RenderPhysicalModel#698a9@Offset(175.9, 417.3), RenderAnnotatedRegion<SystemUiOverlayStyle>#ed6fa@Offset(175.9, 417.3), RenderSemanticsAnnotations#0ab92@Offset(175.9, 417.3), RenderRepaintBoundary#c9423@Offset(175.9, 417.3), RenderIgnorePointer#9c8ef@Offset(175.9, 417.3), RenderAnimatedOpacity#f16db@Offset(175.9, 417.3), RenderAnimatedOpacity#e1d45@Offset(175.9, 417.3), _RenderColoredBox#eb923@Offset(175.9, 417.3), RenderAnimatedOpacity#6181e@Offset(175.9, 417.3), RenderIgnorePointer#43b5c@Offset(175.9, 417.3), RenderAnimatedOpacity#a7154@Offset(175.9, 417.3), RenderRepaintBoundary#18ceb@Offset(175.9, 417.3), RenderSemanticsAnnotations#e7a11@Offset(175.9, 417.3), RenderOffstage#6a927@Offset(175.9, 417.3), RenderSemanticsAnnotations#711b5@Offset(175.9, 417.3), _RenderTheater#e6074@Offset(175.9, 417.3), RenderAbsorbPointer#6ef41@Offset(175.9, 417.3), RenderPointerListener#d6e0f@Offset(175.9, 417.3), RenderSemanticsAnnotations#abb10@Offset(175.9, 417.3), RenderPointerListener#4e941@Offset(175.9, 417.3), RenderSemanticsGestureHandler#314df@Offset(175.9, 417.3), RenderSemanticsAnnotations#4c769@Offset(175.9, 417.3), RenderSemanticsAnnotations#0315b@Offset(175.9, 417.3), RenderSemanticsAnnotations#f859f@Offset(175.9, 417.3), RenderTapRegionSurface#aff68@Offset(175.9, 417.3), RenderSemanticsAnnotations#8182a@Offset(175.9, 417.3), RenderSemanticsAnnotations#50793@Offset(175.9, 417.3), HitTestEntry<HitTestTarget>#0d622(_ReusableRenderView#cecf9), HitTestEntry<HitTestTarget>#790ea(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure>.<anonymous closure> (file:///home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart:119:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:42 +307: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded a tab open on the folded phone stays open when it unfolds
+00:42 +308: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded a tab open on the folded phone stays open when it unfolds
+00:42 +309: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded tap a slice: it opens on the left, the wheel stays
+
+Warning: A call to tap() with finder "Found 1 widget with text "Food" descending from widget with type "PieMenu": [
+  Text("Food", inherit: true, color: Color(alpha: 1.0000, red: 0.1216, green: 0.1098, blue: 0.0902, colorSpace: ColorSpace.sRGB), size: 13.0, weight: 600, maxLines: 1, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(629.0, 323.3)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#3e333 relayoutBoundary=up1
+The hit test result at that offset is: HitTestResult(RenderPointerListener#70421@Offset(67.3, 173.3), RenderSemanticsGestureHandler#4b017@Offset(67.3, 173.3), RenderCustomPaint#24407@Offset(67.3, 173.3), RenderStack#10c8d@Offset(67.3, 173.3), RenderOpacity#96bf4@Offset(67.3, 173.3), RenderConstrainedBox#6e151@Offset(67.3, 173.3), RenderPositionedBox#7de9d@Offset(167.5, 173.3), _RenderLayoutBuilder#02442@Offset(167.5, 173.3), RenderFlex#09631@Offset(167.5, 303.3), RenderPadding#d767a@Offset(183.5, 323.3), RenderPadding#cda9d@Offset(183.5, 323.3), RenderConstrainedBox#1f7f2@Offset(183.5, 323.3), RenderFlex#d1220@Offset(629.0, 323.3), RenderCustomMultiChildLayoutBox#d89d6@Offset(629.0, 323.3), _RenderInkFeatures#e1c07@Offset(629.0, 323.3), RenderPhysicalModel#0307a@Offset(629.0, 323.3), RenderAnnotatedRegion<SystemUiOverlayStyle>#78ec7@Offset(629.0, 323.3), RenderSemanticsAnnotations#88b36@Offset(629.0, 323.3), RenderRepaintBoundary#b8a43@Offset(629.0, 323.3), RenderIgnorePointer#f33f7@Offset(629.0, 323.3), RenderAnimatedOpacity#918e4@Offset(629.0, 323.3), RenderAnimatedOpacity#15e5a@Offset(629.0, 323.3), _RenderColoredBox#ed9a4@Offset(629.0, 323.3), RenderAnimatedOpacity#f6145@Offset(629.0, 323.3), RenderIgnorePointer#697ef@Offset(629.0, 323.3), RenderAnimatedOpacity#5b487@Offset(629.0, 323.3), RenderRepaintBoundary#fcf34@Offset(629.0, 323.3), RenderSemanticsAnnotations#9d4b4@Offset(629.0, 323.3), RenderOffstage#a20d8@Offset(629.0, 323.3), RenderSemanticsAnnotations#79edf@Offset(629.0, 323.3), _RenderTheater#5d49d@Offset(629.0, 323.3), RenderAbsorbPointer#d50c7@Offset(629.0, 323.3), RenderPointerListener#0c519@Offset(629.0, 323.3), RenderSemanticsAnnotations#8f1db@Offset(629.0, 323.3), RenderPointerListener#2ff05@Offset(629.0, 323.3), RenderSemanticsGestureHandler#a03f2@Offset(629.0, 323.3), RenderSemanticsAnnotations#ae3c5@Offset(629.0, 323.3), RenderSemanticsAnnotations#aeb59@Offset(629.0, 323.3), RenderSemanticsAnnotations#ead3a@Offset(629.0, 323.3), RenderTapRegionSurface#ed140@Offset(629.0, 323.3), RenderSemanticsAnnotations#a35b1@Offset(629.0, 323.3), RenderSemanticsAnnotations#a3f9f@Offset(629.0, 323.3), HitTestEntry<HitTestTarget>#d9a58(_ReusableRenderView#cecf9), HitTestEntry<HitTestTarget>#ca8a6(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure>.<anonymous closure> (file:///home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart:142:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:42 +310: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded hold a slice to open it on the right, then swap and bring the wheel back
+
+Warning: A call to longPress() with finder "Found 1 widget with text "Food" descending from widget with type "PieMenu": [
+  Text("Food", inherit: true, color: Color(alpha: 1.0000, red: 0.1216, green: 0.1098, blue: 0.0902, colorSpace: ColorSpace.sRGB), size: 13.0, weight: 600, maxLines: 1, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(572.6, 534.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#e77c5 relayoutBoundary=up1
+The hit test result at that offset is: HitTestResult(RenderPointerListener#c8ac2@Offset(126.1, 312.7), RenderSemanticsGestureHandler#8fe57@Offset(126.1, 312.7), RenderCustomPaint#b9d0c@Offset(126.1, 312.7), RenderStack#4a2ed@Offset(126.1, 312.7), RenderOpacity#14a47@Offset(126.1, 312.7), RenderConstrainedBox#b7bd0@Offset(126.1, 312.7), RenderPositionedBox#ef1eb@Offset(126.1, 384.0), _RenderLayoutBuilder#7aaa2@Offset(126.1, 384.0), RenderFlex#e7643@Offset(126.1, 514.0), RenderPadding#35d70@Offset(142.1, 534.0), RenderPadding#6b8ab@Offset(142.1, 534.0), RenderConstrainedBox#0cd9e@Offset(142.1, 534.0), RenderFlex#17003@Offset(572.6, 534.0), RenderCustomMultiChildLayoutBox#b3825@Offset(572.6, 534.0), _RenderInkFeatures#3a910@Offset(572.6, 534.0), RenderPhysicalModel#3b098@Offset(572.6, 534.0), RenderAnnotatedRegion<SystemUiOverlayStyle>#d7396@Offset(572.6, 534.0), RenderSemanticsAnnotations#e6a3c@Offset(572.6, 534.0), RenderRepaintBoundary#a3dd5@Offset(572.6, 534.0), RenderIgnorePointer#ab21a@Offset(572.6, 534.0), RenderAnimatedOpacity#e0d22@Offset(572.6, 534.0), RenderAnimatedOpacity#e7c38@Offset(572.6, 534.0), _RenderColoredBox#bbffb@Offset(572.6, 534.0), RenderAnimatedOpacity#8f71c@Offset(572.6, 534.0), RenderIgnorePointer#55481@Offset(572.6, 534.0), RenderAnimatedOpacity#20798@Offset(572.6, 534.0), RenderRepaintBoundary#3bece@Offset(572.6, 534.0), RenderSemanticsAnnotations#2c284@Offset(572.6, 534.0), RenderOffstage#0b66b@Offset(572.6, 534.0), RenderSemanticsAnnotations#8f871@Offset(572.6, 534.0), _RenderTheater#cdd34@Offset(572.6, 534.0), RenderAbsorbPointer#26dc5@Offset(572.6, 534.0), RenderPointerListener#af4e3@Offset(572.6, 534.0), RenderSemanticsAnnotations#d8980@Offset(572.6, 534.0), RenderPointerListener#a0bc8@Offset(572.6, 534.0), RenderSemanticsGestureHandler#1546b@Offset(572.6, 534.0), RenderSemanticsAnnotations#1d9c8@Offset(572.6, 534.0), RenderSemanticsAnnotations#644b4@Offset(572.6, 534.0), RenderSemanticsAnnotations#277e7@Offset(572.6, 534.0), RenderTapRegionSurface#c741d@Offset(572.6, 534.0), RenderSemanticsAnnotations#f3a78@Offset(572.6, 534.0), RenderSemanticsAnnotations#5140b@Offset(572.6, 534.0), HitTestEntry<HitTestTarget>#dfe88(_ReusableRenderView#cecf9), HitTestEntry<HitTestTarget>#7dadd(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.longPress (package:flutter_test/src/controller.dart:1212:7)
+#3      main.<anonymous closure>.<anonymous closure> (file:///home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart:152:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "longPress()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:43 +311: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded hold a slice to open it on the right, then swap and bring the wheel back
+00:43 +312: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded hold a slice to open it on the right, then swap and bring the wheel back
+00:43 +313: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded hold a slice to open it on the right, then swap and bring the wheel back
+00:43 +314: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded the first time it opens unfolded, a short tour; only once
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TextWidgetFinder:<Found 1 widget with text "Two at once": [
+            Text("Two at once", inherit: true, color: Color(alpha: 1.0000, red: 0.1216, green:
+0.1098, blue: 0.0902, colorSpace: ColorSpace.sRGB), size: 19.0, weight: 600, height: 1.5x,
+textAlign: center, dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure>.<anonymous closure> (file:///home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart:191:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart line 191
+The test description was:
+  the first time it opens unfolded, a short tour; only once
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:44 +314 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:44 +314 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded the first time it opens unfolded, a short tour; only once [E]
+  Test failed. See exception logs above.
+  The test description was: the first time it opens unfolded, a short tour; only once
+  
+00:44 +315 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:44 +316 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:45 +317 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:45 +318 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:45 +319 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: groups start closed and open with a tap
+00:45 +320 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/exercise_library_test.dart: search and the equipment filter open every group
+00:46 +321 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: a set type picked in the workout editor is saved and preset when the workout starts
+00:48 +322 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: without a store, the tip jar says tips come later
+00:48 +323 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/workout_set_types_test.dart: dropping a set also drops its set type, and normal sets save as none
+00:48 +324 -1: /home/runner/work/pump-and-plate/pump-and-plate/app/test/support_test.dart: quick tips, and any other amount from the list
+00:48 +325 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/pump-and-plate/pump-and-plate/app/test/fold_test.dart: the app unfolded the first time it opens unfolded, a short tour; only once
