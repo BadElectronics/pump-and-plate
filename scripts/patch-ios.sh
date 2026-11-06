@@ -33,8 +33,10 @@ str NSFaceIDUsageDescription "Unlock Pump and Plate with Face ID."
 str NSMicrophoneUsageDescription "Pump and Plate doesn't record sound. iOS asks every app that uses the camera to explain this."
 # Only standard HTTPS: no export paperwork needed.
 plutil -replace ITSAppUsesNonExemptEncryption -bool NO "$PLIST"
-# Portrait only, like the Android app.
-plutil -replace UISupportedInterfaceOrientations -json '["UIInterfaceOrientationPortrait"]' "$PLIST"
+# All orientations are allowed here, but the app keeps an ordinary iPhone in
+# portrait itself (lib/src/fold/fold.dart). Only the iPhone Duo's unfolded
+# screen turns.
+plutil -replace UISupportedInterfaceOrientations -json '["UIInterfaceOrientationPortrait","UIInterfaceOrientationLandscapeLeft","UIInterfaceOrientationLandscapeRight"]' "$PLIST"
 plutil -remove 'UISupportedInterfaceOrientations~ipad' "$PLIST" >/dev/null 2>&1 || true
 
 # ------------------------------------------------------------ project.pbxproj

@@ -73,13 +73,22 @@ class HomeScreen extends StatelessWidget {
     required this.fold,
     required this.selected,
     required this.onPick,
+    this.onHold,
     this.returning = false,
     this.tourStep,
+    this.sideways = false,
   });
 
   final Animation<double> fold;
   final int? selected;
   final ValueChanged<int> onPick;
+
+  /// Holding a slice: on an unfolded phone, choose which side it opens on.
+  final void Function(int index, Offset globalPosition)? onHold;
+
+  /// The wheel beside the greeting and check-ins instead of above them: for
+  /// short, wide screens (a folding phone half-folded or standing as a tent).
+  final bool sideways;
 
   /// Folding back from a section (see [PieMenu.returning]).
   final bool returning;
@@ -105,46 +114,72 @@ class HomeScreen extends StatelessWidget {
           ),
         );
 
+    final greeting = fading(Column(
+      children: [
+        Text(
+          welcomeLine(DateTime.now(), s.settings.nickname),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 23, fontWeight: FontWeight.w500, height: 1.3, color: c.text),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          todaySummary(s),
+          textAlign: TextAlign.center,
+          style: AppText.quiet(c).copyWith(fontSize: 15),
+        ),
+      ],
+    ));
+    final pie = PieMenu(
+      items: appSections,
+      centre: chatSection,
+      selected: selected,
+      fold: fold,
+      onPick: onPick,
+      onHold: onHold,
+      reduceMotion: reduceMotion,
+      returning: returning,
+      spotlight: spotlight,
+    );
+    final rows = fading(AnimatedOpacity(
+      opacity: rowsDim ? 0.3 : 1,
+      duration: const Duration(milliseconds: 180),
+      child: const _CheckRows(),
+    ));
+
+    if (sideways) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Row(
+            children: [
+              Expanded(child: pie),
+              const SizedBox(width: 20),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [greeting, const SizedBox(height: 14), rows],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            fading(Column(
-              children: [
-                Text(
-                  welcomeLine(DateTime.now(), s.settings.nickname),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 23, fontWeight: FontWeight.w500, height: 1.3, color: c.text),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  todaySummary(s),
-                  textAlign: TextAlign.center,
-                  style: AppText.quiet(c).copyWith(fontSize: 15),
-                ),
-              ],
-            )),
+            greeting,
             const SizedBox(height: 10),
-            Expanded(
-              child: PieMenu(
-                items: appSections,
-                centre: chatSection,
-                selected: selected,
-                fold: fold,
-                onPick: onPick,
-                reduceMotion: reduceMotion,
-                returning: returning,
-                spotlight: spotlight,
-              ),
-            ),
+            Expanded(child: pie),
             const SizedBox(height: 10),
-            fading(AnimatedOpacity(
-              opacity: rowsDim ? 0.3 : 1,
-              duration: const Duration(milliseconds: 180),
-              child: const _CheckRows(),
-            )),
+            rows,
           ],
         ),
       ),

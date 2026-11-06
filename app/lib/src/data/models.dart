@@ -219,6 +219,7 @@ class AppSettings {
     this.ownListStore,
     this.barcodeOnline,
     this.tourSeen = false,
+    this.foldTourSeen = false,
     this.aiTier,
     this.autoBackup = false,
     this.backupDays = 7,
@@ -310,6 +311,10 @@ class AppSettings {
   /// The one-minute app tour has been shown (or skipped).
   final bool tourSeen;
 
+  /// The short tour of the folding-phone features has been shown, the
+  /// first time the app opened unfolded.
+  final bool foldTourSeen;
+
   /// The on-device AI model chosen and downloaded ('light', 'medium', 'high'),
   /// or null if none is set up.
   final String? aiTier;
@@ -397,6 +402,7 @@ class AppSettings {
     Object? ownListStore = _keep,
     Object? barcodeOnline = _keep,
     bool? tourSeen,
+    bool? foldTourSeen,
     Object? aiTier = _keep,
     bool? autoBackup,
     int? backupDays,
@@ -450,6 +456,7 @@ class AppSettings {
       ownListStore: identical(ownListStore, _keep) ? this.ownListStore : ownListStore as String?,
       barcodeOnline: identical(barcodeOnline, _keep) ? this.barcodeOnline : barcodeOnline as bool?,
       tourSeen: tourSeen ?? this.tourSeen,
+      foldTourSeen: foldTourSeen ?? this.foldTourSeen,
       aiTier: identical(aiTier, _keep) ? this.aiTier : aiTier as String?,
       autoBackup: autoBackup ?? this.autoBackup,
       backupDays: backupDays ?? this.backupDays,
@@ -504,6 +511,7 @@ class AppSettings {
         'own_list_store': ownListStore,
         'barcode_online': barcodeOnline == null ? null : (barcodeOnline! ? 1 : 0),
         'tour_seen': tourSeen ? 1 : 0,
+        'fold_tour_seen': foldTourSeen ? 1 : 0,
         'ai_tier': aiTier,
         'auto_backup': autoBackup ? 1 : 0,
         'backup_days': backupDays,
@@ -559,6 +567,7 @@ class AppSettings {
         ownListStore: r['own_list_store'] as String?,
         barcodeOnline: r['barcode_online'] == null ? null : r['barcode_online'] == 1,
         tourSeen: r['tour_seen'] == 1,
+        foldTourSeen: r['fold_tour_seen'] == 1,
         aiTier: r['ai_tier'] as String?,
         autoBackup: r['auto_backup'] == 1,
         backupDays: (r['backup_days'] as int?) ?? 7,

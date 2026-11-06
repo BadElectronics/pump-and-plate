@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'config.dart';
 import 'data/models.dart';
 import 'data/store.dart';
+import 'fold/fold.dart';
 import 'screens/lock_screen.dart';
 import 'screens/logger_screen.dart';
 import 'screens/onboarding_screen.dart';
@@ -494,6 +495,18 @@ class _FitAppState extends State<FitApp> with WidgetsBindingObserver {
                   child: app,
                 );
               }
+              // Folding phones: the screen turns only where it should, and
+              // pop-ups keep to one side of the fold.
+              app = OrientationGuard(
+                child: ValueListenableBuilder<double?>(
+                  valueListenable: Hinge.angle,
+                  builder: (context, angle, inner) => MediaQuery(
+                    data: FoldLayout.withPaneDivider(MediaQuery.of(context), hingeAngle: angle),
+                    child: inner!,
+                  ),
+                  child: app,
+                ),
+              );
               if (!_showLock) return app;
               return Stack(
                 children: [

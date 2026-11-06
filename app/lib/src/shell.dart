@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'fold/fold.dart';
+import 'fold/fold_tour.dart';
 import 'screens/chat_screen.dart';
 import 'screens/food_screen.dart';
 import 'screens/home_screen.dart';
@@ -10,6 +12,7 @@ import 'screens/progress_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/support_screen.dart';
 import 'state/app_state.dart';
+import 'theme/app_theme.dart';
 import 'theme/tokens.dart';
 import 'widgets/app_tour.dart';
 import 'widgets/common.dart';
@@ -46,6 +49,12 @@ class _AppShellState extends State<AppShell> with SingleTickerProviderStateMixin
 
   /// The app tour step on screen, or null.
   int? _tourStep;
+
+  /// Unfolded: a section shown on the right instead of the wheel, or null.
+  int? _right;
+
+  /// The folding-phone tour has been asked for this session.
+  bool _foldTourAsked = false;
 
   @override
   void initState() {
@@ -174,8 +183,315 @@ class _AppShellState extends State<AppShell> with SingleTickerProviderStateMixin
     }
   }
 
+  // ---------------------------------------------------------- folding phones
+
+  /// Unfolded: opens [i] on the left; the wheel stays on the right.
+  void _openLeft(int i) {
+    HapticFeedback.selectionClick();
+    FocusScope.of(context).unfocus();
+    setState(() {
+      if (_right == i) _right = null;
+      _section = i;
+      _returning = false;
+    });
+    // So folding the phone shut shows this section, not the wheel.
+    _fold.value = 1;
+  }
+
+  /// Unfolded: opens [i] on the right, beside the section on the left.
+  void _openRight(int i) {
+    HapticFeedback.selectionClick();
+    FocusScope.of(context).unfocus();
+    setState(() {
+      final left = _section ?? 1;
+      // Already on the left: the left goes back to Progress (or Log).
+      if (left == i) _section = i == 1 ? 0 : 1;
+      _section ??= 1;
+      _right = i;
+      _returning = false;
+    });
+    _fold.value = 1;
+  }
+
+  void _swapSides() {
+    final r = _right;
+    if (r == null) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      _right = _section ?? 1;
+      _section = r;
+    });
+  }
+
+  /// Puts the wheel back on the right. From the left side's button, the
+  /// right side's section moves over to the left.
+  void _wheelBack({required bool fromLeft}) {
+    final r = _right;
+    if (r == null) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      if (fromLeft) _section = r;
+      _right = null;
+    });
+  }
+
+  Future<void> _holdMenu(int i, Offset at) async {
+    HapticFeedback.mediumImpact();
+    final items = [...appSections, chatSection];
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final choice = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(at & const Size(1, 1), Offset.zero & overlay.size),
+      items: [
+        PopupMenuItem(
+          key: const ValueKey('hold-left'),
+          value: 'left',
+          child: Text('Open ${items[i].label} on the left'),
+        ),
+        PopupMenuItem(
+          key: const ValueKey('hold-right'),
+          value: 'right',
+          child: Text('Open ${items[i].label} on the right'),
+        ),
+      ],
+    );
+    if (!mounted) return;
+    if (choice == 'left') _openLeft(i);
+    if (choice == 'right') _openRight(i);
+  }
+
+  /// The first time the app is unfolded: a short tour of what that does.
+  void _maybeFoldTour() {
+    if (_foldTourAsked) return;
+    final s = AppScope.of(context);
+    if (!s.settings.onboarded || s.settings.foldTourSeen) return;
+    _foldTourAsked = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final st = AppScope.of(context);
+      st.setSettings(st.settings.copyWith(foldTourSeen: true));
+      await FoldTour.show(context, halfFold: Hinge.angle.value != null);
+    });
+  }
+
+  /// [child] laid out as if it had the screen to itself, [width] wide.
+  Widget _pane(BuildContext context, double width, Widget child, {required bool left}) {
+    final mq = MediaQuery.of(context);
+    return SizedBox(
+      width: width,
+      child: MediaQuery(
+        data: mq.copyWith(
+          size: Size(width, mq.size.height),
+          padding: left ? mq.padding.copyWith(right: 0) : mq.padding.copyWith(left: 0),
+          viewPadding: left ? mq.viewPadding.copyWith(right: 0) : mq.viewPadding.copyWith(left: 0),
+          displayFeatures: const [],
+        ),
+        child: child,
+      ),
+    );
+  }
+
+  /// A section shown beside another, with buttons to swap the two sides or
+  /// put the wheel back.
+  Widget _sidePage(BuildContext context, int i, {required bool left}) {
+    final c = AppColors.of(context);
+    final items = [...appSections, chatSection];
+    final mq = MediaQuery.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(16, mq.padding.top + 6, 8, 0),
+          child: Row(
+            children: [
+              Icon(items[i].icon, size: 18, color: c.accent),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(items[i].label, style: AppText.quiet(c).copyWith(fontSize: 13, fontWeight: FontWeight.w600)),
+              ),
+              IconButton(
+                key: ValueKey(left ? 'swap-left' : 'swap-right'),
+                tooltip: 'Swap sides',
+                onPressed: _swapSides,
+                icon: Icon(Icons.swap_horiz_rounded, color: c.text),
+              ),
+              IconButton(
+                key: ValueKey(left ? 'wheel-left' : 'wheel-right'),
+                tooltip: 'Show the wheel',
+                onPressed: () => _wheelBack(fromLeft: left),
+                icon: Icon(Icons.donut_large_rounded, color: c.text),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          // Builder: the padding to remove is this side's, not the whole screen's.
+          child: Builder(
+            builder: (paneContext) => MediaQuery.removePadding(
+              context: paneContext,
+              removeTop: true,
+              child: KeyedSubtree(key: ValueKey('side-$i'), child: _page(i)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Unfolded: a section on the left, the wheel (or a second section) on
+  /// the right, split on the fold.
+  Widget _twoPane(BuildContext context, FoldLayout f) {
+    final mq = MediaQuery.of(context);
+    final left = _section ?? 1;
+    final right = _right;
+    final rightWidth = mq.size.width - f.split - f.gap;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _pane(
+          context,
+          f.split,
+          right == null
+              ? KeyedSubtree(key: ValueKey('left-$left'), child: _page(left))
+              : _sidePage(context, left, left: true),
+          left: true,
+        ),
+        SizedBox(width: f.gap),
+        _pane(
+          context,
+          rightWidth,
+          right == null
+              ? HomeScreen(
+                  key: const ValueKey('pane-wheel'),
+                  fold: kAlwaysDismissedAnimation,
+                  selected: left,
+                  onPick: _openLeft,
+                  onHold: _holdMenu,
+                )
+              : _sidePage(context, right, left: false),
+          left: false,
+        ),
+      ],
+    );
+  }
+
+  /// Half-folded like a laptop: the open section (Progress to start) on the
+  /// upright half, the wheel and today's check-ins flat.
+  Widget _laptop(BuildContext context, FoldLayout f) {
+    final mq = MediaQuery.of(context);
+    final w = mq.size.width;
+    final top = _section ?? 1;
+    return Column(
+      children: [
+        SizedBox(
+          height: f.split,
+          child: MediaQuery(
+            data: mq.copyWith(
+              size: Size(w, f.split),
+              padding: mq.padding.copyWith(bottom: 0),
+              viewPadding: mq.viewPadding.copyWith(bottom: 0),
+              displayFeatures: const [],
+            ),
+            child: KeyedSubtree(key: ValueKey('top-$top'), child: _page(top)),
+          ),
+        ),
+        SizedBox(height: f.gap),
+        Expanded(
+          child: MediaQuery(
+            data: mq.copyWith(
+              size: Size(w, mq.size.height - f.split - f.gap),
+              padding: mq.padding.copyWith(top: 0),
+              viewPadding: mq.viewPadding.copyWith(top: 0),
+              displayFeatures: const [],
+            ),
+            child: HomeScreen(
+              key: const ValueKey('laptop-wheel'),
+              fold: kAlwaysDismissedAnimation,
+              selected: top,
+              onPick: _openLeft,
+              sideways: true,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Standing as a tent, outside a workout: the wheel beside today's
+  /// check-ins. A section opens over it, with a button back.
+  Widget _tent(BuildContext context) {
+    final c = AppColors.of(context);
+    final open = _section;
+    if (open == null) {
+      return HomeScreen(
+        key: const ValueKey('tent-wheel'),
+        fold: kAlwaysDismissedAnimation,
+        selected: null,
+        onPick: _openLeft,
+        sideways: true,
+      );
+    }
+    return Stack(
+      children: [
+        Positioned.fill(child: KeyedSubtree(key: ValueKey('tent-$open'), child: _page(open))),
+        Positioned(
+          right: 8,
+          top: MediaQuery.of(context).padding.top + 4,
+          child: IconButton.filledTonal(
+            tooltip: 'Back to the wheel',
+            onPressed: () {
+              setState(() => _section = null);
+              _fold.value = 0;
+            },
+            icon: Icon(Icons.donut_large_rounded, color: c.text),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _bigScreen(BuildContext context, FoldLayout f) {
+    final c = AppColors.of(context);
+    final overlay = widget.palette.isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark;
+    final body = switch (f.mode) {
+      FoldMode.twoPane => _twoPane(context, f),
+      FoldMode.laptop => _laptop(context, f),
+      _ => _tent(context),
+    };
+    return PopScope(
+      canPop: _section == null && _right == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (_right != null) {
+          setState(() => _right = null);
+        } else {
+          setState(() => _section = null);
+          _fold.value = 0;
+        }
+      },
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: overlay.copyWith(statusBarColor: Colors.transparent, systemNavigationBarColor: c.background),
+        child: Scaffold(backgroundColor: c.background, body: body),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<double?>(
+      valueListenable: Hinge.angle,
+      builder: (context, angle, _) {
+        final f = FoldLayout.of(MediaQuery.of(context), hingeAngle: angle);
+        if (f.mode == FoldMode.phone) return _phone(context);
+        if (f.mode == FoldMode.twoPane) _maybeFoldTour();
+        return _bigScreen(context, f);
+      },
+    );
+  }
+
+  /// An ordinary phone (or a folding phone's outside screen): the pie, which
+  /// folds into a tab bar when a section opens.
+  Widget _phone(BuildContext context) {
     final c = AppColors.of(context);
     final mq = MediaQuery.of(context);
     final keyboard = mq.viewInsets.bottom > 0;

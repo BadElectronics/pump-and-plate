@@ -7,7 +7,7 @@ import 'store.dart';
 /// The on-phone database. Schema changes must bump [_version] and add a
 /// step in [_upgrade] so updates never lose data.
 class SqliteStore implements Store {
-  static const _version = 30;
+  static const _version = 31;
 
   Database? _db;
 
@@ -327,6 +327,9 @@ class SqliteStore implements Store {
       await db.execute('ALTER TABLE session ADD COLUMN exercise_notes TEXT');
       // Which muscle heads an exercise works, when you've changed it.
       await db.execute('ALTER TABLE exercise ADD COLUMN heads TEXT');
+    }
+    if (from < 31) {
+      await db.execute('ALTER TABLE settings ADD COLUMN fold_tour_seen INTEGER');
     }
   }
 

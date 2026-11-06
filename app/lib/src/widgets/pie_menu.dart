@@ -22,6 +22,7 @@ class PieMenu extends StatefulWidget {
     required this.selected,
     required this.fold,
     required this.onPick,
+    this.onHold,
     this.reduceMotion = false,
     this.returning = false,
     this.spotlight,
@@ -43,6 +44,10 @@ class PieMenu extends StatefulWidget {
   final int? selected;
   final Animation<double> fold;
   final ValueChanged<int> onPick;
+
+  /// Holding a slice (unfolded phones: choose which side it opens on), with
+  /// where the finger is on screen.
+  final void Function(int index, Offset globalPosition)? onHold;
   final bool reduceMotion;
 
   @override
@@ -264,6 +269,13 @@ class _PieMenuState extends State<PieMenu> with SingleTickerProviderStateMixin {
           final i = _hit(d.localPosition, size);
           if (i != null) widget.onPick(i);
         },
+        onLongPressStart: widget.onHold == null
+            ? null
+            : (d) {
+                if (widget.fold.value > 0) return;
+                final i = _hit(d.localPosition, size);
+                if (i != null) widget.onHold!(i, d.globalPosition);
+              },
       ),
     ));
     for (var i = 0; i <= _slices; i++) {

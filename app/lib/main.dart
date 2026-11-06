@@ -12,6 +12,7 @@ import 'src/services/ai_engine.dart';
 import 'src/services/ai_gemma.dart';
 import 'src/services/backup_folder.dart';
 import 'src/services/device_probe.dart';
+import 'src/fold/fold.dart';
 import 'src/services/photo_files.dart';
 import 'src/services/reminders.dart';
 import 'src/services/tips.dart';
@@ -23,6 +24,10 @@ Future<void> main() async {
   // The app is designed for portrait; this also keeps it from rotating
   // whatever the phone's auto-rotate setting is.
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // Folding phones: listen to the hinge, so the app can tell when it stands
+  // half-open as a tent. Unfolded screens are allowed to turn once the app
+  // is up (see OrientationGuard).
+  Hinge.start();
   // On-device AI engine. If it can't start, the app still opens; Chat then
   // works without AI (pasted recipes and workouts still become drafts).
   var aiReady = false;

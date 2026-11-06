@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import '../calc/calc.dart';
 import '../data/models.dart';
+import '../fold/fold.dart';
 import '../services/phone.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
@@ -710,6 +711,9 @@ class _LoggerScreenState extends State<LoggerScreen> {
     }
     _syncControllers(s, x);
     final minutes = DateTime.now().difference(x.startedAt).inMinutes;
+    // Unfolded or half-folded phones lay the workout out differently. The
+    // screen rebuilds every second, so the hinge is read fresh each time.
+    final fold = x.finished ? const FoldLayout(FoldMode.phone) : FoldLayout.of(MediaQuery.of(context), hingeAngle: Hinge.angle.value);
 
     // Exercises in order of first appearance.
     final order = <String>[];
@@ -724,7 +728,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
       backgroundColor: c.background,
       body: Stack(
         children: [
-          SafeArea(
+          _foldLayout(context, s, c, x, fold, SafeArea(
         child: Column(
           children: [
             Padding(
@@ -808,7 +812,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
                   ],
                 ),
               ),
-            if (!x.finished && _restingIndex(x) != null)
+            if (!x.finished && _restingIndex(x) != null && fold.mode == FoldMode.phone)
               _restBar(s, c, x, _restingIndex(x)!),
             Expanded(
               child: ListView(
@@ -865,7 +869,7 @@ class _LoggerScreenState extends State<LoggerScreen> {
             ),
           ],
         ),
-          ),
+          )),
           if (_locked)
             Positioned.fill(
               child: _LockLayer(
@@ -881,13 +885,428 @@ class _LoggerScreenState extends State<LoggerScreen> {
     );
   }
 
-  Widget _restBar(AppState s, AppColors c, Session x, int i) {
+  /// Reps chosen with the tent screen's − and + for set [_tentFor].
+  int? _tentReps;
+  int? _tentFor;
+
+  /// The first set not ticked yet, in order.
+  int? _nextIndex(Session x) {
+    for (var j = 0; j < x.sets.length; j++) {
+      if (!x.sets[j].done) return j;
+    }
+    return null;
+  }
+
+  /// "Bench press · set 3", or "Bench press warm-up".
+  String _setName(AppState s, Session x, int i) {
+    final set = x.sets[i];
+    if (set.warmup) return '${s.exerciseName(set.exerciseId)} warm-up';
+    var n = 0;
+    for (var j = 0; j <= i; j++) {
+      if (x.sets[j].exerciseId == set.exerciseId && !x.sets[j].warmup) n++;
+    }
+    return '${s.exerciseName(set.exerciseId)} · set $n';
+  }
+
+  static String _clockText(int sec) => '${sec ~/ 60}:${(sec % 60).toString().padLeft(2, '0')}';
+
+  /// What set [i] will be logged as: what's typed, else the suggestion.
+  (double?, int?) _planned(AppState s, Session x, int i) {
+    final set = x.sets[i];
+    if (s.isCardio(set.exerciseId)) return (null, null);
+    final (hw, hr, _) = _hint(s, x, i);
+    return (set.weightKg ?? hw, set.reps ?? hr);
+  }
+
+  String _loadText(AppState s, Session x, int i, double? w, int? r) {
+    final bw = s.exercise(x.sets[i].exerciseId)?.bodyweight ?? false;
+    final load = w == null
+        ? null
+        : bw
+            ? (w == 0 ? 'Bodyweight' : 'BW +${_fmtWeight(w)} $_unit')
+            : '${_fmtWeight(w)} $_unit';
+    return [if (load != null) load, if (r != null) '$r reps'].join(' × ');
+  }
+
+  /// Ticks set [i], with the reps chosen on the tent screen if any.
+  void _logNext(AppState s, Session x, int i, int? reps) {
+    var cur = x;
+    if (reps != null && !s.isCardio(x.sets[i].exerciseId)) {
+      final sets = [...cur.sets];
+      sets[i] = sets[i].copyWith(reps: reps);
+      cur = cur.copyWith(sets: sets);
+      _reps[i].text = '$reps';
+    }
+    HapticFeedback.mediumImpact();
+    _toggleDone(s, cur, i);
+    setState(() {
+      _tentReps = null;
+      _tentFor = null;
+    });
+  }
+
+  /// Lays the workout out for the screen: as it is on a phone, beside a big
+  /// rest panel when unfolded, under it when half-folded like a laptop, and
+  /// as one big timer and button on the outside screen standing as a tent.
+  Widget _foldLayout(BuildContext context, AppState s, AppColors c, Session x, FoldLayout fold, Widget main) {
+    final mq = MediaQuery.of(context);
+    switch (fold.mode) {
+      case FoldMode.phone:
+        return main;
+      case FoldMode.twoPane:
+        final rightWidth = mq.size.width - fold.split - fold.gap;
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              width: fold.split,
+              child: MediaQuery(
+                data: mq.copyWith(
+                  size: Size(fold.split, mq.size.height),
+                  padding: mq.padding.copyWith(right: 0),
+                  viewPadding: mq.viewPadding.copyWith(right: 0),
+                  displayFeatures: const [],
+                ),
+                child: main,
+              ),
+            ),
+            SizedBox(width: fold.gap),
+            SizedBox(
+              width: rightWidth,
+              child: SafeArea(
+                left: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                  child: _restPanel(s, c, x, list: true),
+                ),
+              ),
+            ),
+          ],
+        );
+      case FoldMode.laptop:
+        return Column(
+          children: [
+            SizedBox(
+              height: fold.split,
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                  child: _restPanel(s, c, x, list: false),
+                ),
+              ),
+            ),
+            SizedBox(height: fold.gap),
+            Expanded(
+              child: MediaQuery(
+                data: mq.copyWith(
+                  size: Size(mq.size.width, mq.size.height - fold.split - fold.gap),
+                  padding: mq.padding.copyWith(top: 0),
+                  viewPadding: mq.viewPadding.copyWith(top: 0),
+                  displayFeatures: const [],
+                ),
+                child: main,
+              ),
+            ),
+          ],
+        );
+      case FoldMode.tent:
+        return SafeArea(child: _tentPanel(s, c, x));
+    }
+  }
+
+  /// The rest timer and the next set, large. [list] adds today's exercises.
+  Widget _restPanel(AppState s, AppColors c, Session x, {required bool list}) {
+    final r = _restingIndex(x);
+    final n = _nextIndex(x);
+    final big = TextStyle(
+      fontSize: list ? 64 : 56,
+      fontWeight: FontWeight.w300,
+      height: 1.05,
+      color: c.text,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+    Widget rest;
+    if (r == null) {
+      rest = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Rest', style: AppText.quiet(c).copyWith(fontSize: 13, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Text('Starts when you tick a set', style: AppText.body(c).copyWith(fontSize: 17)),
+        ],
+      );
+    } else {
+      _maybeBuzz(s, x, r);
+      final set = x.sets[r];
+      final elapsed = DateTime.now().difference(set.restStartedAt!).inSeconds;
+      final target = _targetRest(s, x, set.exerciseId);
+      final reached = elapsed >= target;
+      rest = Column(
+        key: const ValueKey('fold-rest'),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Rest', style: AppText.quiet(c).copyWith(fontSize: 13, fontWeight: FontWeight.w600)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: Text(_clockText(elapsed), style: big)),
+              SmallButton(label: 'End rest', onTap: () => _endRestTapped(s, x)),
+            ],
+          ),
+          GestureDetector(
+            onTap: () => _editTarget(s, x, set.exerciseId),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Text(
+                reached ? 'Target ${_clockText(target)} reached · change' : 'of ${_clockText(target)} · change',
+                style: AppText.quiet(c).copyWith(
+                  fontSize: 13,
+                  color: reached ? c.accent : c.muted,
+                  fontWeight: reached ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: LinearProgressIndicator(
+              value: (elapsed / target).clamp(0.0, 1.0),
+              minHeight: 6,
+              color: c.accent,
+              backgroundColor: c.chip,
+            ),
+          ),
+        ],
+      );
+    }
+    Widget? next;
+    if (n != null) {
+      final (w, reps) = _planned(s, x, n);
+      final load = _loadText(s, x, n, w, reps);
+      next = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Next', style: AppText.quiet(c).copyWith(fontSize: 13, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 2),
+          Text(_setName(s, x, n), style: AppText.body(c).copyWith(fontSize: 19, fontWeight: FontWeight.w600)),
+          if (load.isNotEmpty)
+            Text(load, style: AppText.body(c).copyWith(fontSize: 15, color: c.accent, fontWeight: FontWeight.w600)),
+        ],
+      );
+    }
+    final order = <String>[];
+    for (final set in x.sets) {
+      if (!order.contains(set.exerciseId)) order.add(set.exerciseId);
+    }
+    final current = n == null ? null : x.sets[n].exerciseId;
+    final today = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Today', style: AppText.quiet(c).copyWith(fontSize: 13, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 4),
+        for (final id in order)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(border: Border(top: BorderSide(color: c.line))),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    s.exerciseName(id),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppText.body(c).copyWith(
+                      fontSize: 14,
+                      color: id == current ? c.accent : c.text,
+                      fontWeight: id == current ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${x.sets.where((e) => e.exerciseId == id && e.done && !e.warmup).length} of '
+                  '${x.sets.where((e) => e.exerciseId == id && !e.warmup).length}',
+                  style: AppText.quiet(c).copyWith(fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+    if (!list) {
+      // Half-folded: the timer and the next set side by side on the top half.
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(flex: 3, child: rest),
+          const SizedBox(width: 24),
+          Expanded(flex: 2, child: next ?? const SizedBox()),
+        ],
+      );
+    }
+    return ListView(
+      key: const ValueKey('fold-side'),
+      padding: EdgeInsets.zero,
+      children: [
+        rest,
+        const SizedBox(height: 28),
+        if (next != null) ...[next, const SizedBox(height: 28)],
+        today,
+      ],
+    );
+  }
+
+  /// Standing as a tent, on the outside screen: a big timer to read from the
+  /// bench, and one big button to log the next set.
+  Widget _tentPanel(AppState s, AppColors c, Session x) {
+    final r = _restingIndex(x);
+    final n = _nextIndex(x);
+    String label = 'Ready';
+    var clock = '0:00';
+    double? progress;
+    if (r != null) {
+      _maybeBuzz(s, x, r);
+      final set = x.sets[r];
+      final elapsed = DateTime.now().difference(set.restStartedAt!).inSeconds;
+      final target = _targetRest(s, x, set.exerciseId);
+      label = elapsed >= target ? 'Rest done' : 'Rest';
+      clock = _clockText(elapsed);
+      progress = (elapsed / target).clamp(0.0, 1.0);
+    }
+    final timer = Column(
+      key: const ValueKey('tent-timer'),
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(label, style: AppText.quiet(c).copyWith(fontSize: 15, fontWeight: FontWeight.w600)),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            clock,
+            style: TextStyle(
+              fontSize: 120,
+              fontWeight: FontWeight.w300,
+              height: 1,
+              color: c.text,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ),
+        if (progress != null) ...[
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: LinearProgressIndicator(value: progress, minHeight: 6, color: c.accent, backgroundColor: c.chip),
+          ),
+        ],
+      ],
+    );
+    Widget side;
+    if (n == null) {
+      side = Center(child: Text('Every set is logged', style: AppText.body(c).copyWith(fontSize: 17)));
+    } else {
+      final cardio = s.isCardio(x.sets[n].exerciseId);
+      final (w, planned) = _planned(s, x, n);
+      final reps = (_tentFor == n ? _tentReps : null) ?? planned;
+      void step(int d) {
+        final v = ((reps ?? 0) + d).clamp(0, 999);
+        HapticFeedback.selectionClick();
+        setState(() {
+          _tentFor = n;
+          _tentReps = v;
+        });
+      }
+
+      Widget round(IconData icon, String tip, VoidCallback onTap) => IconButton.outlined(
+            tooltip: tip,
+            onPressed: onTap,
+            iconSize: 26,
+            style: IconButton.styleFrom(minimumSize: const Size(56, 56), side: BorderSide(color: c.line)),
+            icon: Icon(icon, color: c.text),
+          );
+      side = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Next: ${_setName(s, x, n)}',
+              maxLines: 2, style: AppText.quiet(c).copyWith(fontSize: 14, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          if (!cardio)
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _loadText(s, x, n, w, null).isEmpty ? 'Reps' : _loadText(s, x, n, w, null),
+                    style: AppText.body(c).copyWith(fontSize: 22, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                round(Icons.remove_rounded, 'One rep fewer', () => step(-1)),
+                SizedBox(
+                  width: 52,
+                  child: Text(
+                    reps == null ? '–' : '$reps',
+                    key: const ValueKey('tent-reps'),
+                    textAlign: TextAlign.center,
+                    style: AppText.body(c).copyWith(fontSize: 26, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                round(Icons.add_rounded, 'One rep more', () => step(1)),
+              ],
+            ),
+          const SizedBox(height: 14),
+          SizedBox(
+            height: 64,
+            child: FilledButton(
+              key: const ValueKey('tent-log'),
+              onPressed: () => _logNext(s, x, n, cardio ? null : reps),
+              style: FilledButton.styleFrom(
+                backgroundColor: c.accent,
+                foregroundColor: c.onAccent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                textStyle: const TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+              ),
+              child: Text(cardio || reps == null ? 'Log set' : 'Log $reps reps'),
+            ),
+          ),
+          if (r != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 48,
+              child: OutlinedButton(
+                onPressed: () => _endRestTapped(s, x),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: c.text,
+                  side: BorderSide(color: c.line),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('End rest'),
+              ),
+            ),
+          ],
+        ],
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+      child: Row(
+        children: [
+          Expanded(child: timer),
+          const SizedBox(width: 24),
+          Expanded(child: side),
+        ],
+      ),
+    );
+  }
+
+  /// Buzzes (and plays your sound) once, when the rest after set [i]
+  /// reaches its target.
+  void _maybeBuzz(AppState s, Session x, int i) {
     final set = x.sets[i];
     final elapsed = DateTime.now().difference(set.restStartedAt!).inSeconds;
     final target = _targetRest(s, x, set.exerciseId);
-    final reached = elapsed >= target;
     final key = '$i ${set.restStartedAt!.toIso8601String()}';
-    if (reached && _buzzed != key) {
+    if (elapsed >= target && _buzzed != key) {
       _buzzed = key;
       HapticFeedback.heavyImpact();
       // Your own sound, if you picked one (only while the app is on screen;
@@ -899,6 +1318,14 @@ class _LoggerScreenState extends State<LoggerScreen> {
         });
       }
     }
+  }
+
+  Widget _restBar(AppState s, AppColors c, Session x, int i) {
+    final set = x.sets[i];
+    final elapsed = DateTime.now().difference(set.restStartedAt!).inSeconds;
+    final target = _targetRest(s, x, set.exerciseId);
+    final reached = elapsed >= target;
+    _maybeBuzz(s, x, i);
     String clock(int sec) => '${sec ~/ 60}:${(sec % 60).toString().padLeft(2, '0')}';
     var number = 0;
     for (var j = 0; j <= i; j++) {
