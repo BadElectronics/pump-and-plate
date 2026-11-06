@@ -186,6 +186,9 @@ void main() {
       // The dialog fades out, then goes on the next frame.
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pump();
+      // Only one tour was ever opened.
+      expect(find.text('Made for your folding phone'), findsNothing);
+      expect(find.text('Two at once'), findsNothing);
       expect(find.byKey(const ValueKey('fold-tour')), findsNothing);
       await tester.pump(const Duration(milliseconds: 100));
       expect((await store.load()).settings.foldTourSeen, isTrue);

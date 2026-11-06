@@ -56,6 +56,9 @@ class _AppShellState extends State<AppShell> with SingleTickerProviderStateMixin
   /// The folding-phone tour has been asked for this session.
   bool _foldTourAsked = false;
 
+  /// The tour is on screen (only ever one, whatever rebuilds meanwhile).
+  static bool _foldTourOpen = false;
+
   @override
   void initState() {
     super.initState();
@@ -267,10 +270,16 @@ class _AppShellState extends State<AppShell> with SingleTickerProviderStateMixin
     if (!s.settings.onboarded || s.settings.foldTourSeen) return;
     _foldTourAsked = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
+      if (!mounted || _foldTourOpen) return;
       final st = AppScope.of(context);
+      if (st.settings.foldTourSeen) return;
+      _foldTourOpen = true;
       st.setSettings(st.settings.copyWith(foldTourSeen: true));
-      await FoldTour.show(context, halfFold: Hinge.angle.value != null);
+      try {
+        await FoldTour.show(context, halfFold: Hinge.angle.value != null);
+      } finally {
+        _foldTourOpen = false;
+      }
     });
   }
 
