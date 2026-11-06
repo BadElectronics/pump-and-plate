@@ -183,7 +183,8 @@ void main() {
       expect(find.text('Two at once'), findsOneWidget);
       // No hinge sensor here, so two tips and done.
       await tester.tap(find.byKey(const ValueKey('fold-tour-next')));
-      // The dialog fades out, then goes on the next frame.
+      // The fade-out starts on the next frame, runs, then the dialog goes.
+      await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pump();
       // Only one tour was ever opened.
