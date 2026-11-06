@@ -2,10 +2,11 @@
 
 A private workout, nutrition and grocery tracker for Android and iPhone. Everything you log stays on your phone: there are no accounts, no ads, no analytics and no servers.
 
-- **Workouts:** plans, a set-by-set logger with rest timers, warm-ups, notes, training blocks, and muscle maps down to individual muscle heads.
-- **Food:** a food log with barcode scanning, recipes, planned meals, macro goals and a grocery list.
-- **Body:** weigh-ins with a trend line and projection, sleep, water and supplements.
-- **On-device AI:** a chat that can log food, plan workouts and answer questions about your data. It runs entirely on the phone: download one of three models (Light, Medium, High), or on newer iPhones use Apple's built-in model. Nothing you type leaves the phone, and the AI only ever prepares cards you confirm.
+- **Workouts:** plans, a set-by-set logger with rest timers, warm-ups, notes, training blocks that progress week to week, and muscle maps down to individual muscle heads. Estimated 1RM and rep records for every exercise.
+- **Food:** a food log with barcode scanning, your own food library, recipes, planned meals, macro goals and a grocery list built from what you plan to eat.
+- **Body:** weigh-ins with a trend line and projection, sleep, water, supplements, measurements and progress photos.
+- **On-device AI:** a chat that can log food, plan workouts and answer questions about your data. It runs entirely on the phone: download one of three models (Light, Medium, High), or on newer iPhones use Apple's built-in model. Nothing you type leaves the phone, and the AI only ever prepares cards you confirm. A message that mentions self-harm or an eating disorder gets support lines instead of an AI reply.
+- **Yours to keep:** fingerprint or PIN lock, backups you control (with automatic backups to a folder you pick), a weigh-in reminder and rest alerts, and home-screen widgets on Android.
 
 ## What leaves the phone
 
